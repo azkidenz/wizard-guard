@@ -5,9 +5,9 @@ var masterPassword = "P4ssw0rd!";
 var email = "example@example.com";
 var data = "Secret data.";
 
-const masterPasswordHash = generateMasterPasswordHash(masterPassword);
+const masterPasswordHash = generateMasterPasswordHash(masterPassword, email);
 const protectedSymmetricKey = generateProtectedSimmetricKey(masterPassword, email);
-const symmetricKey = decryptSimmetricKey(protectedSymmetricKey);
+const symmetricKey = decryptSimmetricKey(masterPassword, email, protectedSymmetricKey);
 const cipherObject = createCipherObject(symmetricKey, data);
 const decryptedCipherObject = decryptCipherObject(symmetricKey, cipherObject);
 */
@@ -55,7 +55,7 @@ function HKDF(key, salt, info, length) {
 	return okm.substr(0, length);
 }
 
-global.generateProtectedSimmetricKey = function(email) {
+global.generateProtectedSimmetricKey = function(masterPassword, email) {
 	
 	const masterKey = generateMasterKey(masterPassword, email);
 	const stretchedMasterKey = generateStretchedMasterKey(masterKey, email);
@@ -85,7 +85,7 @@ global.generateProtectedSimmetricKey = function(email) {
 	return protectedSymmetricKey;
 }
 
-global.generateMasterPasswordHash = function(masterPassword) {
+global.generateMasterPasswordHash = function(masterPassword, email) {
 	
 	const masterKey = generateMasterKey(masterPassword, email);
 	
@@ -102,7 +102,7 @@ global.generateMasterPasswordHash = function(masterPassword) {
 	}).toString();
 }
 
-global.decryptSimmetricKey = function(protectedSymmetricKey) {
+global.decryptSimmetricKey = function(masterPassword, email, protectedSymmetricKey) {
 	
 	const masterKey = generateMasterKey(masterPassword, email);
 	const stretchedMasterKey = generateStretchedMasterKey(masterKey, email);
