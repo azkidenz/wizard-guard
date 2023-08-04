@@ -2,8 +2,8 @@
 Example:
 
 const randomSalt = generateRandomSalt();
-const masterPasswordHashHash = generateMasterPasswordHashHash(masterPasswordHash);
-const isValidHash = verifyMasterPasswordHash(masterPasswordHash, masterPasswordHashHash, randomSalt);
+const masterPasswordHashHash = generateMasterPasswordHashHash(masterPasswordHash, randomSalt);
+const isValidHash = verifyMasterPasswordHash(masterPasswordHash, randomSalt, masterPasswordHashHash);
 */
 
 const CryptoJS = require("crypto-js");
@@ -12,7 +12,7 @@ var generateRandomSalt = function() {
 	return CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
 }
 
-var generateMasterPasswordHashHash = function(masterPasswordHash) {
+var generateMasterPasswordHashHash = function(masterPasswordHash, randomSalt) {
 	
 	/*
 	Once reaching
@@ -27,19 +27,14 @@ var generateMasterPasswordHashHash = function(masterPasswordHash) {
 	}).toString();
 }
 
-var verifyMasterPasswordHash = function(masterPasswordHash, masterPasswordHashHash, randomSalt) {
+var verifyMasterPasswordHash = function(masterPasswordHash, randomSalt, masterPasswordHashHash) {
 	
 	/*
 	A hash of the master key is sent to the
 	server upon account creation and login, and used to authenticate the user account.
 	*/
-	
-	const hash = CryptoJS.PBKDF2(masterPasswordHash, randomSalt, {
-		keySize: 256 / 32,
-		iterations: 100000,
-		hasher: CryptoJS.algo.SHA256
-		}).toString();
-	return hash === masterPasswordHashHash;
+
+	return generateMasterPasswordHashHash(masterPasswordHash, randomSalt) === masterPasswordHashHash;
 }
 
 exports.generateRandomSalt = generateRandomSalt;
