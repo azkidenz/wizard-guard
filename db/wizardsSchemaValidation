@@ -2,7 +2,7 @@ db.createCollection("wizards", {
     validator: {
   $jsonSchema: {
     bsonType: "object",
-    required: ["user", "magicPassword", "devices", "vault"],
+    required: ["user", "magic", "devices", "vault"],
     properties: {
       user: {
         bsonType: "object",
@@ -25,7 +25,15 @@ db.createCollection("wizards", {
           creationTimestamp: {bsonType: "date"}
         }
       },
-      magicPassword: {bsonType: "string"},
+      magic: {
+      bsonType: "object",
+        required: ["password", "salt"],
+        properties: {
+          password: {bsonType: "string"},
+          salt: {bsonType: "string"}
+        }
+      },
+
       devices: {
         bsonType: "array",
         items: {
@@ -39,101 +47,11 @@ db.createCollection("wizards", {
         }
       },
       vault: {
-        bsonType: "object",
-        required: ["login", "paymentCards", "secureNotes"],
-        properties: {
-          login: {
-            bsonType: "array",
-            items: {
-              bsonType: "object",
-              required: ["title"],
-              properties: {
-                title: {bsonType: "string"},
-                username: {bsonType: "string"},
-                password: {bsonType: "string"},
-                secret2fa: {bsonType: "string"},
-                websites: {
-                  bsonType: "array",
-                  items: {bsonType: "string"}
-                },
-                note: {bsonType: "string"},
-                customFields: {
-                  bsonType: "array",
-                  items: {
-                    bsonType: "object",
-                    required: ["label", "value", "type"],
-                    properties: {
-                      label: {bsonType: "string"},
-                      value: {bsonType: "string"},
-                      type: {enum: ["text", "hidden"]}
-                    }
-                  }
-                }
-              }
-            }
-          },
-          paymentCards: {
-            bsonType: "array",
-            items: {
-              bsonType: "object",
-              required: ["title"],
-              properties: {
-                title: {bsonType: "string"},
-                holder: {bsonType: "string"},
-                number: {bsonType: "string"},
-                expiration: {
-                  bsonType: "object",
-                  required: ["month", "year"],
-                  properties: {
-                    month: {bsonType: "int"},
-                    year: {bsonType: "int"}
-                  }
-                },
-                issuer: {enum: ["Visa", "Mastercard", "American Express", "Altro"]},
-                cvv: {"bsonType": "int"},
-                pin: {"bsonType": "int"},
-                note: {"bsonType": "string"},
-                customFields: {
-                  bsonType: "array",
-                  items: {
-                    bsonType: "object",
-                    required: ["label", "value", "type"],
-                    properties: {
-                      label: {bsonType: "string"},
-                      value: {bsonType: "string"},
-                      type: {enum: ["text", "hidden"]}
-                    }
-                  }
-                }
-              }
-            }
-          },
-          secureNotes: {
-            bsonType: "array",
-           items: {
-              bsonType: "object",
-              required: ["title"],
-              properties: {
-                title: {bsonType: "string"},
-                note: {bsonType: "string"},
-                customFields: {
-                  bsonType: "array",
-                  items: {
-                    bsonType: "object",
-                    required: ["label", "value", "type"],
-                    properties: {
-                      label: {bsonType: "string"},
-                      value: {bsonType: "string"},
-                      type: {enum: ["text", "hidden"]}
-                    }
-                  }
-                }
-              }
-            }
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "token"],
+          properties: {
+            id: {bsonType: "objectId"},
+            value: {"bsonType": "string"}
           }
-        }
-      }
-    }
-  }
-}
-});
