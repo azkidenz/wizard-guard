@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		<title>WizardGuard | SignIn</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<!-- Stylesheets -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	</head>
+	<body class="bg-light user-select-none">
+		<div class="row vh-100 align-items-center mx-0 px-0">
+			<div class="col-12">
+				<div class="text-center mt-4">
+					<p class="h1 mb-4">WizardGuard</p>
+					<p class="h4 mb-4"><i class="bi bi-shield-lock me-2"></i>Accedi alla cassaforte</p>
+				</div>
+				<div class="mb-4">
+					<div class="row justify-content-center">
+						<div class="col-9 col-md-6 col-lg-4">
+							<div class="form-floating">
+								<input type="email" class="form-control rounded-0 rounded-top border-bottom-0 shadow-none" id="signinEmail" name="signinEmail" placeholder="example@example.com">
+								<label for="signinEmail"><i class="bi bi-envelope me-2"></i>Il tuo indirizzo email</label>
+							</div>
+							<div class="form-floating">
+								<input type="password" class="form-control rounded-0 rounded-bottom shadow-none" id="signinPassword" name="signinPassword" placeholder="**********">
+								<label for="signinPassword"><i class="bi bi-key me-2"></i>La tua password</label>
+							</div>
+							<div class="small mt-2">
+								Password dimenticata? <span data-bs-toggle="modal" data-bs-target="#resetPasswordModal" role="button" class="text-primary fw-bold">Ripristina</span>
+							</div>
+							<div class="form-check my-4 d-flex justify-content-center">
+								<input class="form-check-input shadow-none" type="checkbox" value="remember" id="flexRemember">
+								<label class="form-check-label ms-2" for="flexRemember">Ricorda i dati di accesso</label>
+							</div>
+							<div class="d-grid mb-4">
+								<button class="btn btn-primary shadow-none" type="button">Accedi</button>
+							</div>
+							<div class="small text-center">
+								Sei nuovo? <span data-bs-toggle="modal" data-bs-target="#signupModal" role="button" class="text-primary fw-bold">Registrati</span>
+							</div>
+							<hr class="my-4">
+							<div class="text-muted text-center small">
+								&copy; 2023 | WizardGuard
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+			
+		<!-- Recover password modal -->
+		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="resetPasswordModalLabel">Ripristina password</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						Oh no! Inserisci il tuo indirizzo email nella casella di testo qui sotto. Se l'indirizzo indicato corrisponde a un account attivo, riceverai le istruzioni necessarie per il ripristino della tua password.
+						<div class="form-floating mt-3">
+							<input type="email" class="form-control shadow-none" id="resetEmail" name="resetEmail" placeholder="example@example.com">
+							<label for="resetEmail"><i class="bi bi-envelope me-2"></i>Il tuo indirizzo email</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal">Conferma</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- SignUp modal -->
+		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="signupModalLabel">Crea un account</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						È il momento delle presentazioni. Io sono WizardGuard e tu?
+						<div class="form-floating mt-3">
+							<input type="text" class="form-control shadow-none rounded-0 rounded-top border-bottom-0" id="signupFirstName" name="signupFirstName" placeholder="*">
+							<label for="signupFirstName"><i class="bi bi-person me-2"></i>Il tuo nome</label>
+						</div>
+						<div class="form-floating mb-3">
+							<input type="text" class="form-control shadow-none rounded-0 rounded-bottom" id="signupLastName" name="signupLastName" placeholder="*">
+							<label for="signupLastName"><i class="bi bi-person me-2"></i>Il tuo cognome</label>
+						</div>
+						Questi saranno i tuoi dati di accesso. Non dimenticarli!
+						<div class="form-floating mt-3">
+							<input type="email" class="form-control rounded-0 rounded-top shadow-none" id="signupEmail" name="signupEmail" placeholder="example@example.com">
+							<label for="signupEmail"><i class="bi bi-envelope me-2"></i>Il tuo indirizzo email</label>
+						</div>
+						<div class="form-floating">
+							<input type="password" class="form-control rounded-0 shadow-none border-bottom-0 border-top-0" id="signupPassword" name="signupPassword" placeholder="**********">
+							<label for="signupPassword"><i class="bi bi-key me-2"></i>Crea una password</label>
+						</div>
+					<div class="form-floating">
+						<input type="password" class="form-control rounded-0 rounded-bottom shadow-none" id="signupPasswordConfirm" name="signupPasswordConfirm" placeholder="**********">
+						<label for="signupPasswordConfirm"><i class="bi bi-key me-2"></i>Conferma la password</label>
+					</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal">Registrati</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Feedback modal -->
+		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="feedbackModalLabel">Operazione completata</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="feedbackModalBody">
+						Operazione completata con successo.
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal">Ho capito</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	</body>
+</html>
