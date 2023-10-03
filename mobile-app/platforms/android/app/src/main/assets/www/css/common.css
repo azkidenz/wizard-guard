@@ -1,0 +1,95 @@
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {   
+	border-color: var(--bs-border-color);
+	box-shadow: 0 none;
+	outline: 0 none;
+}
+
+.bg-eye {
+	background-color: var(--bs-body-bg) !important;
+}
+
+.rounded-bottom-end {
+	border-bottom-right-radius: var(--bs-border-radius) !important;
+}
+
+.rounded-bottom-start {
+	border-bottom-left-radius: var(--bs-border-radius) !important;
+}
+
+.toast {
+	--bs-toast-bg: rgba(var(--bs-body-bg-rgb), 1) !important;
+}
+
+.progress {
+	height: 5px !important;
+}
+
+/*********/
+/* Icons */
+/*********/
+
+.bi::before {
+	display: inline-block;
+	content: "";
+	vertical-align: -.125em;
+	background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' clip-rule='evenodd'/></svg>");
+	background-repeat: no-repeat;
+	background-size: 1rem 1rem;
+	
+}
+
+.bi {
+	margin-bottom: 0.25rem;
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+}
+
+.bi-large {
+	width: 25px;
+	height: 25px;
+}
+
+/*********/
+/* Theme */
+/*********/
+
+[data-bs-theme=light] .text-theme {
+	color: #1B3F91;
+}
+
+[data-bs-theme=dark] .text-theme {
+	color: #BDBF09;
+}
+
+[data-bs-theme=dark] .btn-outline-primary {
+  --bs-btn-color: #BDBF09;
+  --bs-btn-border-color: #BDBF09;
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-bg: #BDBF09;
+  --bs-btn-hover-border-color: #BDBF09;
+  --bs-btn-focus-shadow-rgb: 27, 63, 145;
+  --bs-btn-active-color: #000;
+  --bs-btn-active-bg: #BDBF09;
+  --bs-btn-active-border-color: #BDBF09;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #BDBF09;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #BDBF09;
+  --bs-gradient: none;
+}

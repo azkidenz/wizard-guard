@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="it" data-bs-theme="light">
+	<head>
+		<title data-translate-key="signin-title">WizardGuard | Accedi</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
+		
+		<!-- Stylesheets -->
+		<script src="./js/bootstrap-style.js"></script>
+		<script src="./js/theme.js"></script>
+		<link rel="stylesheet" href="./css/common.css">
+	</head>
+	<body class="user-select-none">
+	
+		<div id="loading" class="vh-100 d-flex justify-content-center align-items-center">
+			<div class="spinner-border text-theme" role="status"></div>
+		</div>
+	
+		<div id="mainContent" class="d-none">
+			<div class="row vh-100 align-items-center mx-0 px-0">
+				<div class="col-12">
+					<div class="text-center mt-4">
+						<p class="h1 mb-4 d-flex justify-content-center"><img src = "./img/logo.svg" width="60" /><span class="ms-3">WizardGuard</span></p>
+						<p class="h4 mb-4"><svg class="bi bi-large"><use xlink:href="./img/bootstrap-icons.svg#shield-lock"/></svg><span class="ms-2" data-translate-key="signin-title-access-vault">Accedi alla cassaforte</span></p>
+					</div>
+					<div class="mb-4">
+						<div class="row justify-content-center">
+							<div class="col-10 col-sm-9 col-md-6 col-lg-4">
+								<div class="form-floating">
+									<input type="email" class="form-control rounded-0 rounded-top border-bottom-0 shadow-none" id="signinEmail" name="signinEmail" placeholder="example@example.com">
+									<label for="signinEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+								</div>
+								<div class="input-group">
+									<div class="form-floating">
+										<input type="password" class="form-control rounded-top-0 rounded-bottom-start border-end-0 shadow-none" id="signinPassword" name="signinPassword" placeholder="**********">
+										<label for="signinPassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="signin-input-password">La tua password</span></label>
+										
+									</div>
+									<span class="input-group-text rounded-top-0 rounded-bottom-end bg-eye border-0 border-top border-bottom border-end" role="button" id="signinPasswordEye"><svg id="eyeSigninPassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+								</div>
+								<div id="passwordProgressBar" class="progress d-none">
+									<div id="passwordStrength" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<div class="small mt-2">
+									<span data-translate-key="signin-lost-password">Password dimenticata?</span> <span data-bs-toggle="modal" data-bs-target="#resetPasswordModal" role="button" class="text-theme fw-bold" data-translate-key="signin-lost-password-action">Contattaci</span>
+								</div>
+								<div class="form-check my-4 d-flex justify-content-center">
+									<input class="form-check-input shadow-none" type="checkbox" value="localMode" name="localMode" id="localMode">
+									<label class="form-check-label ms-2" for="localMode"><span data-translate-key="signin-local-mode">Usa modalità locale</span></label><label><span data-bs-toggle="modal" data-bs-target="#localModeModal" role="button" class="ms-1 text-theme fw-bold small" data-translate-key="signin-local-mode-action">Come funziona?</span></label>
+								</div>
+								<div class="d-grid mb-4">
+									<button class="btn btn-primary shadow-none" type="button" id="signinButton" data-translate-key="signin-access-button">Accedi</button>
+								</div>
+								<div class="small text-center">
+									<span data-translate-key="signin-signup">Sei nuovo?</span> <span data-bs-toggle="modal" data-bs-target="#signupModal" role="button" class="text-theme fw-bold" data-translate-key="signin-signup-action">Registrati</span>
+								</div>
+								<hr class="my-4">
+								<div class="text-muted text-center small">
+									<span data-translate-key="signin-language">Lingua:</span>
+									<span class="dropdown">
+										<span class="dropdown-toggle ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<span class="text-theme fw-bold" id="selectedLanguage">IT</span>
+										</span>
+										<ul class="dropdown-menu">
+											<li><a class="dropdown-item dropdown-language" href="#" id="language-en">English</a></li>
+											<li><a class="dropdown-item dropdown-language active" href="#" id="language-it">Italiano</a></li>
+										</ul>
+									</span>
+								</div>
+								<div class="text-muted text-center small">
+									<span data-translate-key="signin-theme">Tema:</span>
+									<span class="dropdown">
+										<span class="dropdown-toggle ms-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<span class="text-theme fw-bold" id="selectedTheme" data-translate-key="signin-theme-edit">Cambia</span>
+										</span>
+										<ul class="dropdown-menu">
+											<li><a class="dropdown-item dropdown-theme active" href="#" id="theme-light" data-translate-key="signin-theme-light">Chiaro</a></li>
+											<li><a class="dropdown-item dropdown-theme" href="#" id="theme-dark" data-translate-key="signin-theme-dark">Scuro</a></li>
+										</ul>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+			
+		<!-- Reset password modal -->
+		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="resetPasswordModalLabel" data-translate-key="signin-title-password-reset">Ripristina password</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p data-translate-key="signin-password-reset-description-1">
+							L'unico modo per ottenere l'accesso ai tuoi dati è tramite la password principale che hai fornito in fase di creazione.
+						</p>
+						<p data-translate-key="signin-password-reset-description-2">
+							WizardGuard utilizza la crittografia end-to-end e nessuno, nemmeno noi, ha accesso ai tuoi dati. Se vuoi procedere al ripristino del tuo account, eliminandone il contenuto, poi contattarci qui sotto.
+						</p>
+						<p>
+							<a class="text-theme fw-bold text-decoration-none" href="mailto:example@example.com" data-translate-key="signin-password-reset-action">Clicca su questo testo per inviare una email tramite il tuo client di posta predefinito</a>
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal" data-translate-key="signin-positive-button">Ho capito</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- SignUp modal -->
+		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="signupModalLabel" data-translate-key="signin-title-signup">Crea un account</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div data-translate-key="signin-signup-biographical">
+							Inserisci i tuoi dati anagrafici.
+						</div>
+						<div class="form-floating mt-3">
+							<input type="text" class="form-control shadow-none rounded-0 rounded-top border-bottom-0" id="signupFirstName" name="signupFirstName" placeholder="*">
+							<label for="signupFirstName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-first-name">Il tuo nome</span></label>
+						</div>
+						<div class="form-floating mb-3">
+							<input type="text" class="form-control shadow-none rounded-0 rounded-bottom" id="signupLastName" name="signupLastName" placeholder="*">
+							<label for="signupLastName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-last-name">Il tuo cognome</span></label>
+						</div>
+						<div data-translate-key="signin-signup-credentials">
+							Inserisci i dati necessari per accedere al tuo profilo.
+						</div>
+						<div class="form-floating mt-3">
+							<input type="email" class="form-control rounded-0 rounded-top shadow-none" id="signupEmail" name="signupEmail" placeholder="example@example.com">
+							<label for="signupEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+						</div>
+						<div class="input-group">
+							<div class="form-floating mx-0">
+								<input type="password" class="form-control rounded-0 shadow-none border-end-0 border-bottom-0 border-top-0" id="signupPassword" name="signupPassword" placeholder="**********">
+								<label for="signupPassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="signin-input-create-password">Crea una password</span></label>
+							</div>
+							<span class="input-group-text rounded-0 bg-eye border-0 border-end" role="button" id="signupPasswordEye"><svg id="eyeSignupPassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+						<div id="signupPasswordProgressBar" class="progress px-0 mx-0">
+							<div id="signupPasswordStrength" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+						</div>
+						<div class="input-group">
+							<div class="form-floating">
+								<input type="password" class="form-control rounded-top-0 rounded-bottom-start border-end-0 shadow-none" id="signupPasswordConfirm" name="signupPasswordConfirm" placeholder="**********">
+								<label for="signupPasswordConfirm"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="signin-input-confirm-password">Conferma la password</span></label>
+							</div>
+							<span class="input-group-text rounded-top-0 rounded-bottom-end bg-eye border-0 border-end border-top border-bottom" role="button" id="signupPasswordConfirmEye"><svg id="eyeSignupPasswordConfirm" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+						<div class="mt-3 small" data-translate-key="signin-feedback-password-complexity-error">
+							La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-primary no-shadow" data-bs-dismiss="modal" data-translate-key="signin-cancel-button">Annulla</button>
+						<button type="button" class="btn btn-primary no-shadow" id="signupButton" data-translate-key="signin-signup-register-button">Registrati</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Local mode modal -->
+		<div class="modal fade" id="localModeModal" tabindex="-1" aria-labelledby="localModeModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="localModeModalLabel" data-translate-key="signin-title-local-mode">Modalità locale</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="feedbackModalCloseButton"></button>
+					</div>
+					<div class="modal-body">
+						<p data-translate-key="signin-local-mode-description-1">La modalità locale ti permette di utilizzare WizardGuard senza la necessità di creare un account. I dati sono salvati solo sul dispositivo locale e non sono sincronizzati con le tue altre istanze.</p>
+						<p data-translate-key="signin-local-mode-description-2">Ricordati però che - anche creando un account - WizardGuard utilizza la crittografia end-to-end e nessuno, nemmeno noi, ha accesso ai tuoi dati.</p>
+						<p class="fw-bold" data-translate-key="signin-local-mode-description-3">Attenzione: con questa modalità perderai l'accesso a tutto ciò che hai salvato se non riuscirai più ad accedere al dispositivo o se ripristinerai il tuo browser.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal" id="feedbackModalConfirmButton" data-translate-key="signin-positive-button">Ho capito</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Feedback modal -->
+		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="feedbackModalLabel" data-translate-key="signin-title-feedback">Registrazione completata</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="feedbackModalCloseButton"></button>
+					</div>
+					<div class="modal-body" id="feedbackModalBody" data-translate-key="signin-feedback-description">
+						Registrazione completata con successo! Controlla il tuo indirizzo email, ti abbiamo inviato le istruzioni per attivare il tuo account.
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal" id="feedbackModalConfirmButton" data-translate-key="signin-positive-button">Ho capito</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Feedback -->
+		<div class="toast-container position-fixed top-0 end-0 p-3">
+			<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-header">
+					<strong class="me-auto" id="toastTitle"></strong>
+					<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+				<div class="toast-body" id="toastMessage"></div>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="cordova.js"></script>
+		<script src="./js/jquery.js"></script>
+		<script src="./js/bootstrap.js"></script>
+		<script src="./js/localization.js"></script>
+		<script src="./js/common.js"></script>
+		<script src="./js/signin.js"></script>
+		<script src="./js/mobile.js"></script>
+	</body>
+</html>

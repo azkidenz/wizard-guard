@@ -1,0 +1,108 @@
+@media (max-width: 576px) {
+	.list-group-horizontal-sm-only {
+		flex-direction: row;
+	}
+	.sticky-botton-sm-only {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+}
+@media (min-width: 576px) {
+	.min-vh-100-no-sm {
+		min-height: 100vh!important;
+	}
+}
+
+.floating-search {
+	bottom: 75px;
+}
+
+.sticky-title {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 62px;
+}
+
+.title-normal {
+	font-weight: normal;
+}
+
+.element-icon {
+	width: 24px;
+	height: 24px;
+}
+
+[data-bs-theme=light] .bg-lateral-bar {
+	background-color: #F3F6FC;
+}
+
+[data-bs-theme=dark] .bg-lateral-bar {
+	background-color: #060F22;
+}
+
+/*****************************/
+/* Password generator slider */
+/*****************************/
+
+.form-range::-webkit-slider-thumb {
+	background: rgba(var(--bs-primary-rgb)) !important;
+}
+
+.form-range::-moz-range-thumb {
+	background: rgba(var(--bs-primary-rgb)) !important;
+}
+
+.form-range::-ms-thumb {
+	background: rgba(var(--bs-primary-rgb)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.form-range::-webkit-slider-thumb {
+		-webkit-transition: none;
+		transition: none;
+	}
+}
+
+.form-range::-webkit-slider-thumb:active {
+	background-color: rgba(var(--bs-primary-rgb)) !important;
+}
+
+.form-range::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 0.5rem;
+	color: transparent;
+	cursor: pointer;
+	background-color: #cccccc;
+	border-color: transparent;
+	border-radius: 1rem;
+}
+
+/*********************/
+/* TOTP progress bar */
+/*********************/
+
+.progress-bar-totp {
+	animation: fill 30s linear;
+}
+
+@keyframes fill {
+	0% {
+		width: 100%;
+	}
+	100% {
+		width: 0%;
+	}
+}
+
+/***********/
+/* Sidebar */
+/***********/
+
+.list-group-item.active {
+    z-index: 2 !important;
+    color: var(--bs-list-group-active-color) !important;
+    background-color: var(--bs-list-group-active-bg) !important;
+    border-color: var(--bs-list-group-active-border-color) !important;
+}
