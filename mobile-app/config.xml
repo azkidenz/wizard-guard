@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="it.wizardguard" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>WizardGuard</name>
+    <description>A simple password manager</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        The WizardGuard Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+	<allow-intent href="mailto:*" />
+	<platform name="android">
+        <preference name="orientation" value="portrait" />
+		<preference name="AndroidWindowSplashScreenAnimatedIcon" value="platforms/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
+		<preference name="AndroidWindowSplashScreenBackground" value="#1B3F91" />
+	</platform>
+</widget>

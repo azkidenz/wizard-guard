@@ -10,6 +10,14 @@ const protectedSymmetricKey = generateProtectedSimmetricKey(masterPassword, emai
 const symmetricKey = decryptSimmetricKey(masterPassword, email, protectedSymmetricKey);
 const cipherObject = createCipherObject(symmetricKey, data);
 const decryptedCipherObject = decryptCipherObject(symmetricKey, cipherObject);
+
+Other utilities:
+
+var lenght = 20;
+var isComplexPassword = true;
+
+const randomPassword = generateRandomPassword(length, isComplexPassword);
+
 */
 
 const CryptoJS = require("crypto-js");
@@ -39,20 +47,18 @@ function generateStretchedMasterKey(masterKey, email) {
 	return HKDF(masterKey, email, "Master Key", 512 / 8);
 }
 
-function HKDF(key, salt, info, length) {
-	const hash = CryptoJS.SHA256;
-	const prk = CryptoJS.HmacSHA256(key, salt);
-	const infoBuffer = CryptoJS.enc.Utf8.parse(info);
-	const outputBlocks = Math.ceil(length / hash().outputSize);
-	let okm = '';
-	let previousT = '';
-	for (let i = 0; i < outputBlocks; i++) {
-		const input = previousT + infoBuffer + String.fromCharCode(i + 1);
-		const t = CryptoJS.HmacSHA256(input, prk);
-		okm += t.toString();
-		previousT = t;
+function HKDF(masterKey, salt, info, keyLengthInBytes) {
+	const prk = CryptoJS.HmacSHA256(masterKey, salt);
+	const prkWordArray = CryptoJS.enc.Hex.parse(prk.toString());
+	const infoWordArray = CryptoJS.enc.Utf8.parse(info);
+	const keyingMaterial = CryptoJS.lib.WordArray.create();
+	for (let i = 0; i < Math.ceil(keyLengthInBytes / 32); i++) {
+		const input = CryptoJS.lib.WordArray.create().concat(prkWordArray).concat(infoWordArray).concat(CryptoJS.lib.WordArray.create([i + 1], 1));
+		const output = CryptoJS.HmacSHA256(input, prk);
+		keyingMaterial.concat(output);
 	}
-	return okm.substr(0, length);
+	const extendedKey = keyingMaterial.toString(CryptoJS.enc.Hex).substring(0, keyLengthInBytes * 2);
+	return extendedKey;
 }
 
 global.generateProtectedSimmetricKey = function(masterPassword, email) {
@@ -150,4 +156,24 @@ global.decryptCipherObject = function(symmetricKey, encryptedData) {
 		padding: CryptoJS.pad.Pkcs7,
 		keySize: 256 / 32,
 	}).toString(CryptoJS.enc.Utf8);
+}
+
+global.generateRandomPassword = function(length, isComplexPassword) {
+	
+	/*
+	Random password generator
+	*/
+	
+	const charsetComplex = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
+	const charsetSimple = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	var charset = charsetSimple;
+	if(isComplexPassword) {
+		charset = charsetComplex;
+	}
+	let password = "";
+	for (let i = 0; i < length; i++) {
+		const randomIndex = CryptoJS.lib.WordArray.random(1).words[0] % charset.length;
+		password += charset[randomIndex];
+	}
+	return password;
 }
