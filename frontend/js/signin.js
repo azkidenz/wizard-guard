@@ -15,10 +15,16 @@ var cryptoWorker = new Worker("./js/crypto-worker.js");
 
 cryptoWorker.addEventListener("message", function(e) {
 	var args = e.data.args;
-	if(args[0] == "generateMasterPasswordHash") {
+	if(args[0] == "generateMasterPasswordHashSignin") {
 		const email = $("#signinEmail").val();
 		const masterPasswordHash = args[1];
 		signin(email, masterPasswordHash);
+	}
+	else if(args[0] == "generateMasterPasswordHashToken") {
+		const masterPasswordHash = args[1];
+		const email = args[2];
+		const token = args[3];
+		confirmProfileDeletion(masterPasswordHash, email, token);
 	}
 	else if(args[0] == "signUp") {
 		const masterPasswordHash = args[1];
@@ -29,6 +35,12 @@ cryptoWorker.addEventListener("message", function(e) {
 		}
 		else {
 			signup(globalFirstName, globalLastName, globalEmail, masterPasswordHash, protectedSymmetricKey);
+		}
+	}
+	else if(args[0] == "decryptSimmetricKey") {
+		if(args[1] != "") {
+			sessionStorage.setItem("symmetricKey", args[1]);
+			window.location.replace("./vault.html");
 		}
 	}
 });
@@ -61,6 +73,11 @@ $('.modal').on('hidden.bs.modal', function (e) {
 	setPasswordStrength(true, "#signupPassword", "#signupPasswordStrength");
 	clickEye("#signupPassword", "#eyeSignupPassword", true);
 	clickEye("#signupPasswordConfirm", "#eyeSignupPasswordConfirm", true);
+	clickEye("#deletePassword", "#eyeDeletePassword", true);
+	clickEye("#changeOldPassword", "#eyeChangeOldPassword", true);
+	clickEye("#changePassword", "#eyeChangePassword", true);
+	clickEye("#changePasswordConfirm", "#eyeChangePasswordConfirm", true);
+
 });
 
 /******************/
@@ -94,27 +111,79 @@ $("#signinButton").click(function(){
 			cryptoWorker.postMessage({ "args": [ "signUp", password.val(), email.val() ] });
 		}
 		else {
-			cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHash", password.val(), email.val() ] });
+			cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHashSignin", password.val(), email.val() ] });
 		}
 	}
 });
 
 function signin(email, masterPasswordHash) {
 	if(!isLocalMode) {
-		/* TODO */
-		// Chiamata AJAX al Server
-		//showLoader(false);
-		//showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-credentials-error"));
-		localStorage.setItem("magicKey", "DOWNLOADED_FROM_SERVER");
-		localStorage.setItem("firstName", "Alessandro");
-		localStorage.setItem("lastName", "Fontana");
-		localStorage.setItem("email", email);
-		localStorage.setItem("loginType", "profile");
+		let data = {
+			email: email,
+			password: masterPasswordHash
+		};
+		callApi("user/signin", "POST", data, true,
+			function(result){
+				showFeedback(translateString("feedback-title-success"), translateString("signin-feedback-key-decryption"));
+				localStorage.setItem("firstName", result.data.name.firstName);
+				localStorage.setItem("lastName", result.data.name.lastName);
+				localStorage.setItem("email", email);
+				if(localStorage.getItem("magicKey") != undefined) {
+					sendMagicKey(localStorage.getItem("magicKey"), false);
+				}
+				else {
+					getMagicKey();
+				}
+			},
+			function(result) {
+				showLoader(false);
+				showBackendError(result);
+			}
+		);
 	}
 	else {
 		localStorage.setItem("loginType", "local");
+		window.location.replace("./vault.html");
 	}
-	window.location.replace("./vault.html");
+}
+
+function sendMagicKey(protectedSymmetricKey, isSignUp) {
+	let data = {
+		magicKey: protectedSymmetricKey
+	};
+	callApi("magicKey", "POST", data, true,
+		function(result){
+			if(isSignUp) {
+				localStorage.removeItem("magicKey");
+				localStorage.removeItem("accessToken");
+				localStorage.removeItem("refreshToken");
+				showLoader(false);
+				$("#feedbackModal").modal("show");
+			}
+			else {
+				localStorage.setItem("loginType", "profile");
+				cryptoWorker.postMessage({ "args": [ "decryptSimmetricKey", $("#signinPassword").val(), $("#signinEmail").val(), protectedSymmetricKey ] });
+			}
+		},
+		function(result) {
+			showLoader(false);
+			showBackendError(result);
+		}
+	);
+}
+
+function getMagicKey() {
+	callApi("magicKey", "GET", "", true,
+		function(result){
+			localStorage.setItem("magicKey", result.data.magicKey);
+			localStorage.setItem("loginType", "profile");
+			cryptoWorker.postMessage({ "args": [ "decryptSimmetricKey", $("#signinPassword").val(), $("#signinEmail").val(), result.data.magicKey ] });
+		},
+		function(result) {
+			showLoader(false);
+			showBackendError(result);
+		}
+	);
 }
 
 /******************/
@@ -162,22 +231,184 @@ $("#signupButton").click(function(){
 		globalEmail = email.val();
 		$("#signupModal").modal("hide");
 		showLoader(true);
+		showFeedback(translateString("feedback-title-success"), translateString("signin-feedback-key-creation"));
 		cryptoWorker.postMessage({ "args": [ "signUp", password.val(), email.val() ] });
 	}
 });
 
-function signup(firstName, lastName, email, masterPasswordHash, magicPassword) {
-	/* TODO */
-	// Chiamata AJAX al Server
-	//showLoader(false);
-	//$("#feedbackModal").modal("show");
-	/* Confirm account */
-	localStorage.setItem("firstName", firstName);
-	localStorage.setItem("lastName", lastName);
-	localStorage.setItem("email", email);
-	localStorage.setItem("loginType", "profile");
-	window.location.replace("./vault.html");
+function signup(firstName, lastName, email, masterPasswordHash, protectedSymmetricKey) {
+	let data = {
+		name: {
+			firstName: firstName,
+			lastName: lastName
+		},
+		email: email,
+		password: masterPasswordHash
+	};
+	callApi("user/signup", "POST", data, true,
+		function(result){
+			sendMagicKey(protectedSymmetricKey, true)
+		},
+		function(result) {
+			showLoader(false);
+			showBackendError(result);
+		}
+	);
 }
+
+/*******************************/
+/* SignIn process - activation */
+/*******************************/
+
+function getUrlParameter(sParam) {
+	var sPageURL = window.location.search.substring(1);
+	var sURLVariables = sPageURL.split('&');
+	var sParameterName;
+	for(var i=0; i<sURLVariables.length; i++) {
+		sParameterName = sURLVariables[i].split('=');
+		if (sParameterName[0] === sParam) {
+			return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+		}
+	}
+	return false;
+};
+
+$(document).ready(function() {
+	const action = getUrlParameter("a");
+	const email = getUrlParameter("e");
+	const token = getUrlParameter("t");
+	
+	if(action == "verify" && email && token) {
+		showLoader(true);
+		let data = {
+			email: email,
+			token: token
+		};
+		callApi("user/signup/verify", "POST", data, true,
+			function(result){
+				showLoader(false);
+				$("#signinEmail").val(email);
+				$("#signinPassword").focus();
+				showFeedback(translateString("feedback-title-success"), translateString("signin-signup-activation"));
+			},
+			function(result) {
+				showLoader(false);
+				showBackendError(result);
+			}
+		);
+	}
+	
+	if(action == "delete" && !token) {
+		showFeedback(translateString("feedback-title-success"), translateString("vault-profile-delete-description-2"));
+	}
+	else if(action == "delete" && email && token) {
+		$("#deleteModalEmail").val(email);
+		$("#deleteModalToken").val(token);
+		$("#deleteModal").modal("show");
+	}
+	else if(action == "deleted") {
+		showFeedback(translateString("feedback-title-success"), translateString("signin-profile-deleted"));
+	}
+	else if(action == "expired") {
+		showFeedback(translateString("feedback-title-error"), translateString("signin-session-expired"));
+	}
+	else if(action == "reset" && !token) {
+		showFeedback(translateString("feedback-title-success"), translateString("signin-password-reset"));
+	}
+	else if(action == "reset" && email && token) {
+		$("#changePasswordModalEmail").val(email);
+		$("#changePasswordModalToken").val(token);
+		$("#changePasswordModal").modal("show");
+	}
+});
+
+/******************/
+/* Delete profile */
+/******************/
+
+$(document).ready(function() {
+	$("#deleteProfileButton").click(function(){
+		var password = $("#deletePassword");
+		if(!password.val().trim().length) {
+			password.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-error"));
+		}
+		else {
+			showLoader(true);
+			cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHashToken", $("#deletePassword").val(), $("#deleteModalEmail").val(), $("#deleteModalToken").val() ] });
+			$("#deleteModal").modal("hide");
+		}
+	});
+});
+
+function confirmProfileDeletion(masterPasswordHash, email, token) {
+	let data = {
+		email: email,
+		token: token,
+		password: masterPasswordHash
+	};
+	callApi("user/delete/verify", "DELETE", data, true,
+		function(result){
+			window.location.replace("./signin.html?a=deleted");
+		},
+		function(result) {
+			showLoader(false);
+			$("#deleteModalEmail").val(email);
+			$("#deleteModalToken").val(token);
+			$("#deleteModal").modal("show");
+			showBackendError(result);
+		}
+	);
+}
+
+/*******************/
+/* Change password */
+/*******************/
+
+$(document).ready(function() {
+	$("#changePasswordButton").click(function(e){
+		var oldPassword = $("#changeOldPassword");
+		var password = $("#changePassword");
+		var passwordConfirm = $("#changePasswordConfirm");
+		if(!oldPassword.val().trim().length) {
+			oldPassword.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("vault-feedback-current-password-error"));
+		}
+		else if(!password.val().trim().length) {
+			password.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-error"));
+		}
+		else if(!password.val().match(/^(?=.*\d)(?=.*[!@#$%^&*;])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)) {
+			password.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-complexity-error"));
+		}
+		else if(!passwordConfirm.val().trim().length) {
+			passwordConfirm.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-confirm-error"));
+		}
+		else if(password.val() != passwordConfirm.val()) {
+			passwordConfirm.val("");
+			passwordConfirm.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-match-error"));
+		}
+		else {
+			$("#changePasswordModal").modal("hide");
+			/*showLoader(true);
+			callApi("user/delete/verify", "DELETE", data, true,
+				function(result){
+					window.location.replace("./signin.html?a=deleted");
+				},
+				function(result) {
+					showLoader(false);
+					$("#deleteModalEmail").val(email);
+					$("#deleteModalToken").val(token);
+					$("#deleteModal").modal("show");
+					showBackendError(result);
+				}
+			);*/
+		}
+	});
+});
 
 /**************/
 /* Local mode */
@@ -232,5 +463,17 @@ $(document).ready(function() {
 		if (e.target == e.currentTarget) {
 			clickEye("#signupPasswordConfirm", "#eyeSignupPasswordConfirm", false);
 		}
+	});
+	$("#deletePasswordEye").click(function(e){
+		clickEye("#deletePassword", "#eyeDeletePassword", false);
+	});
+	$("#changeOldPasswordEye").click(function(e){
+		clickEye("#changeOldPassword", "#eyeChangeOldPassword", false);
+	});
+	$("#changePasswordEye").click(function(e){
+		clickEye("#changePassword", "#eyeChangePassword", false);
+	});
+	$("#changePasswordConfirmEye").click(function(e){
+		clickEye("#changePasswordConfirm", "#eyeChangePasswordConfirm", false);
 	});
 });

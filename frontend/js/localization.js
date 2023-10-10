@@ -7,6 +7,22 @@ var translations = {
 		'en': 'Error',
 		'it': 'Errore'
 	},
+	'feedback-generic-error': {
+		'en': 'Unable to contact the server. Please check your connection or try again later.',
+		'it': 'Impossibile contattare il server. Verifica la tua connessione o riprova più tardi.'
+	},
+	'feedback-fail-error': {
+		'en': 'The fields entered are incorrect.',
+		'it': 'I campi inseriti non sono corretti.'
+	},
+	'signin-session-expired': {
+		'en': 'Your session has expired. You need to log in again.',
+		'it': 'La tua sessione è scaduta. Devi effettuare nuovamente l\'accesso.'
+	},
+	'signin-password-reset': {
+		'en': 'You will receive an email with instructions on how to complete the reset of your password.',
+		'it': 'Riceverai un\'email con le istruzioni per completare il reset della tua password.'
+	},
 	'signin-title': {
 		'en': 'WizardGuard | SignIn',
 		'it': 'WizardGuard | Accedi'
@@ -62,6 +78,10 @@ var translations = {
 	'signin-signup-action': {
 		'en': 'Sign Up',
 		'it': 'Registrati'
+	},
+	'signin-signup-activation': {
+		'en': 'Your account has been successfully activated. You can now sign in.',
+		'it': 'Il tuo account è stato attivato con successo. Ora puoi effettuare l\'accesso.'
 	},
 	'signin-language': {
 		'en': 'Language:',
@@ -163,10 +183,6 @@ var translations = {
 		'en': 'The password must be longer than 8 characters and must contain at least one lowercase letter, one uppercase letter, one number and one special character.',
 		'it': 'La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.'
 	},
-	'signin-feedback-credentials-error': {
-		'en': 'The credentials entered are incorrect.',
-		'it': 'Le credenziali inserite non sono corrette.'
-	},
 	'signin-feedback-first-name-error': {
 		'en': 'You must enter a first name.',
 		'it': 'Devi inserire un nome.'
@@ -186,6 +202,26 @@ var translations = {
 	'signin-feedback-password-match-error': {
 		'en': 'Passwords do not match.',
 		'it': 'Le password non corrispondono.'
+	},
+	'signin-feedback-key-creation': {
+		'en': 'Creation of encryption keys in progress.',
+		'it': 'Creazione delle chiavi di cifratura in corso.'
+	},
+	'signin-feedback-key-decryption': {
+		'en': 'Local decryption of synchronized items in progress.',
+		'it': 'Decifratura locale degli elementi sincronizzati in corso.'
+	},
+	'signin-profile-deleted': {
+		'en': 'Your profile has been deleted completely.',
+		'it': 'Il tuo profilo è stato eliminato completamente.'
+	},
+	'signin-change-password-title': {
+		'en': 'Change password',
+		'it': 'Cambia password'
+	},
+	'signin-change-password-description-1': {
+		'en': 'As you requested you can set your new password below. If you did not request it, we recommend that you choose a stronger one.',
+		'it': 'Come da te richiesto puoi impostare la tua nuova password qui sotto. Se non lo hai richiesto tu, ti consigliamo di sceglierne una più forte.'
 	},
 	'unlock-title': {
 		'en': 'WizardGuard | Unlock',
@@ -254,6 +290,10 @@ var translations = {
 	'vault-user-edit': {
 		'en': 'Edit profile',
 		'it': 'Modifica profilo'
+	},
+	'vault-user-edit-success': {
+		'en': 'Your profile has been updated correctly.',
+		'it': 'Il tuo profilo è stato aggiornato correttamente.'
 	},
 	'vault-user-lock': {
 		'en': 'Lock vault',
@@ -475,6 +515,14 @@ var translations = {
 		'en': 'This is a list of all the devices you are logged into. If you have stopped using one or if you detect unauthorized access take steps to disconnect it immediately.',
 		'it': 'Questo è l\'elenco di tutti i dispositivi in cui hai effettuato l\'accesso. Se hai smesso di utilizzarne uno o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.'
 	},
+	'vault-devices-current': {
+		'en': 'This device',
+		'it': 'Questo dispositivo'
+	},
+	'vault-devices-empty': {
+		'en': 'To view other connected devices verify that you are logged into your WizardGuard account and that the connection is active.',
+		'it': 'Per visualizzare gli altri dispositivi connessi verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.'
+	},
 	'vault-delete-device-title': {
 		'en': 'Delete device',
 		'it': 'Elimina dispositivo'
@@ -540,8 +588,16 @@ var translations = {
 		'it': 'Modifica i tuoi dati anagrafici.'
 	},
 	'vault-profile-description-2': {
-		'en': 'Changing your login information will automatically disconnect all sessions.',
-		'it': 'Modificando i tuoi dati di accesso tutte le sessioni verranno automaticamente disconnesse.'
+		'en': 'Read-only email address. If you wish to change it please contact support.',
+		'it': 'Indirizzo email in sola lettura. Se desideri modificarlo contatta il supporto.'
+	},
+	'vault-profile-description-3': {
+		'en': 'Request password change',
+		'it': 'Richiedi cambio password'
+	},
+	'vault-profile-description-4': {
+		'en': 'Enter your current password and press "Confirm" to receive password change instructions to your email address.',
+		'it': 'Inserisci la password attuale e premi su "Conferma" per ricevere le istruzioni di cambio password al tuo indirizzo email.'
 	},
 	'vault-profile-current-password': {
 		'en': 'Current password',
@@ -608,6 +664,10 @@ var translations = {
 		'it': 'Procedendo eliminerai completamente il tuo profilo e tutti i dati salvati.'
 	},
 	'vault-profile-delete-description-2': {
+		'en': 'You will receive an email with instructions for completing the deletion at the email address associated with your account.',
+		'it': 'Riceverai un\'email con le istruzioni per completare l\'eliminazione all\'indirizzo di posta associato al tuo account.'
+	},
+	'vault-profile-delete-description-3': {
 		'en': 'Warning: your data will be lost forever.',
 		'it': 'Attenzione: i tuoi dati saranno persi per sempre.'
 	},
@@ -638,6 +698,10 @@ var translations = {
 };
 
 const defaultLanguage = "it";
+
+function getLocale() {
+	return localStorage.getItem("locale") == undefined ? defaultLanguage : localStorage.getItem("locale");
+}
 
 function translateString(translationKey) {
 	const language = localStorage.getItem("locale") == undefined ? defaultLanguage : localStorage.getItem("locale");
@@ -673,4 +737,18 @@ function setLanguage(language) {
 	$(".dropdown-language").removeClass("active");
 	$("#language-"+language).addClass("active");
 	$("html").attr("lang", language);
+}
+
+/****************/
+/* Set language */
+/****************/
+
+if(localStorage.getItem("locale") == undefined) {
+	var userLang = navigator.language || navigator.userLanguage;
+	if(userLang) {
+		var userLangArray = userLang.split("-");
+		if(userLangArray[0]) {
+			setLanguage(userLangArray[0]);
+		}
+	}
 }

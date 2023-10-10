@@ -11,6 +11,14 @@ self.addEventListener("message", function(e) {
 		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
 		self.postMessage({ "args": [ "generateMasterPasswordHash", masterPasswordHash ] });
 	}
+	else if(args[0] == "generateMasterPasswordHashSignin") {
+		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
+		self.postMessage({ "args": [ "generateMasterPasswordHashSignin", masterPasswordHash ] });
+	}
+	else if(args[0] == "generateMasterPasswordHashToken") {
+		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
+		self.postMessage({ "args": [ "generateMasterPasswordHashToken", masterPasswordHash, args[2], args[3] ] });
+	}
 	else if(args[0] == "generateProtectedSimmetricKey") {
 		const protectedSymmetricKey = generateProtectedSimmetricKey(args[1], args[2]);
 		self.postMessage({ "args": [ "generateProtectedSimmetricKey", protectedSymmetricKey ] });
