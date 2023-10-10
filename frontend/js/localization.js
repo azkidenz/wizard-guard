@@ -697,7 +697,7 @@ var translations = {
 	},
 };
 
-const defaultLanguage = "it";
+const defaultLanguage = "en";
 
 function getLocale() {
 	return localStorage.getItem("locale") == undefined ? defaultLanguage : localStorage.getItem("locale");

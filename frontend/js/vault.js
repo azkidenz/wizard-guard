@@ -686,6 +686,9 @@ function removeDuplicates(arr) {
 }
 
 function updateElementsInVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
 	var elements = [];
 	for(var i=0; i<ids.length; i++) {
 		var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
@@ -704,6 +707,9 @@ function updateElementsInVault(ids) {
 }
 
 function createElementsInVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
 	var elements = [];
 	for(var i=0; i<ids.length; i++) {
 		var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
@@ -932,6 +938,9 @@ function deleteElement(id) {
 }
 
 function deleteElementsFromVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
 	if(ids.length == 1) { 
 		let data = {
 			id: ids[0]
