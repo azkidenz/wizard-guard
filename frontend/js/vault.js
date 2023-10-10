@@ -554,7 +554,6 @@ function setMainTable() {
 	}
 	initHistory();
 	initDeleteButton();
-	loadDevices();
 	initCheckboxes();
 }
 
@@ -658,12 +657,17 @@ function syncVault(remoteElements, remoteElementsTimestamp, remoteElementsValues
 	// Check local elements
 	for(var i=0; i<localElements.length; i++) {
 		if(!remoteElements.includes(localElements[i])) {
-			var value = localStorage.getItem("element-"+localElements[i]);
-			if(value == "") {
-				deleteElements.push(localElements[i]);
+			if(!localElements[i].startsWith("local-")) {
+				localStorage.removeItem("element-"+localElements[i]);
 			}
 			else {
-				createElements.push(localElements[i]);
+				var value = localStorage.getItem("element-"+localElements[i]);
+				if(value == "") {
+					deleteElements.push(localElements[i]);
+				}
+				else {
+					createElements.push(localElements[i]);
+				}
 			}
 		}
 	}
