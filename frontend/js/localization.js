@@ -23,6 +23,10 @@ var translations = {
 		'en': 'You will receive an email with instructions on how to complete the reset of your password.',
 		'it': 'Riceverai un\'email con le istruzioni per completare il reset della tua password.'
 	},
+	'signin-password-changed': {
+		'en': 'The password reset procedure was successfully completed.',
+		'it': 'La procedura di reset della password è stata completata con successo.'
+	},
 	'signin-title': {
 		'en': 'WizardGuard | SignIn',
 		'it': 'WizardGuard | Accedi'
@@ -284,8 +288,8 @@ var translations = {
 		'it': 'Chiudi'
 	},
 	'vault-welcome': {
-		'en': 'Welcome',
-		'it': 'Benvenuto'
+		'en': 'Hello',
+		'it': 'Ciao'
 	},
 	'vault-user-edit': {
 		'en': 'Edit profile',

@@ -1,36 +1,37 @@
 importScripts("./crypto.js");
 
 self.addEventListener("message", function(e) {
+	
 	var args = e.data.args;
-	if(args[0] == "signUp") {
-		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
-		const protectedSymmetricKey = generateProtectedSimmetricKey(args[1], args[2]);
-		self.postMessage({ "args": [ "signUp", masterPasswordHash, protectedSymmetricKey ] });
+	const functionName = args[0];
+	const functionParameters = args[1];
+	const callback = args[2];
+	const callbackParameters = args[3];
+	var results = [];
+	
+	if(functionName == "generateMasterPasswordHash") {
+		results[0] = generateMasterPasswordHash(functionParameters[0], functionParameters[1]);
 	}
-	else if(args[0] == "generateMasterPasswordHash") {
-		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
-		self.postMessage({ "args": [ "generateMasterPasswordHash", masterPasswordHash ] });
+	else if(functionName == "signUp") {
+		results[0] = generateMasterPasswordHash(functionParameters[0], functionParameters[1]);
+		results[1] = generateProtectedSimmetricKey(functionParameters[0], functionParameters[1]);
 	}
-	else if(args[0] == "generateMasterPasswordHashSignin") {
-		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
-		self.postMessage({ "args": [ "generateMasterPasswordHashSignin", masterPasswordHash ] });
+	else if(functionName == "changePassword") {
+		results[0] = generateMasterPasswordHash(functionParameters[0], functionParameters[2]);
+		results[1] = generateMasterPasswordHash(functionParameters[1], functionParameters[2]);
 	}
-	else if(args[0] == "generateMasterPasswordHashToken") {
-		const masterPasswordHash = generateMasterPasswordHash(args[1], args[2]);
-		self.postMessage({ "args": [ "generateMasterPasswordHashToken", masterPasswordHash, args[2], args[3] ] });
+	else if(functionName == "generateProtectedSimmetricKey") {
+		results[0] = generateProtectedSimmetricKey(functionParameters[0], functionParameters[1]);
 	}
-	else if(args[0] == "generateProtectedSimmetricKey") {
-		const protectedSymmetricKey = generateProtectedSimmetricKey(args[1], args[2]);
-		self.postMessage({ "args": [ "generateProtectedSimmetricKey", protectedSymmetricKey ] });
-	}
-	else if(args[0] == "decryptSimmetricKey") {
+	else if(functionName == "decryptSimmetricKey") {
 		try {
-			const symmetricKey = decryptSimmetricKey(args[1], args[2], args[3]);
-			self.postMessage({ "args": [ "decryptSimmetricKey", symmetricKey ] });
+			results[0] = decryptSimmetricKey(functionParameters[0], functionParameters[1], functionParameters[2]);
 		}
 		catch(e) {
-			self.postMessage({ "args": [ "decryptSimmetricKey", "" ] });
+			results[0] = "";
 		}
 		
 	}
+	
+	self.postMessage({ "args": [ functionName, callback, callbackParameters, results ] });
 }, false);

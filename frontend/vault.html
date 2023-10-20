@@ -15,7 +15,7 @@
 	<body class="user-select-none">
 	
 		<div id="loading" class="vh-100 d-flex justify-content-center align-items-center">
-			<div class="spinner-border text-theme" role="status"></div>
+			<img draggable="false" src = "./img/loader.svg" width="60" />
 		</div>
 	
 		<div id="mainContent" class="d-none">
@@ -27,7 +27,7 @@
 					<span class="d-none d-md-inline">
 						<a class="text-white text-decoration-none mx-2 fw-bold pe-none" href="#" data-translate-key="vault-menu-vault">Cassaforte</a>
 						<a class="text-white text-decoration-none mx-2 generatorMenu" href="#" data-bs-toggle="modal" data-bs-target="#generatorModal" data-translate-key="vault-menu-generator">Generatore</a>
-						<a class="text-white text-decoration-none mx-2" href="#" data-bs-toggle="modal" data-bs-target="#devicesModal" data-translate-key="vault-menu-devices" id="showDevicesModal">Dispositivi</a>
+						<a class="text-white text-decoration-none mx-2 d-none" href="#" data-bs-toggle="modal" data-bs-target="#devicesModal" data-translate-key="vault-menu-devices" id="showDevicesModal">Dispositivi</a>
 					</span>
 				</div>
 				<div class="col-6 col-md-3 col-lg-4 text-end pt-1">
@@ -42,7 +42,7 @@
 					</span>
 					<span class="dropdown">
 						<span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-							<span class="text-white d-none d-lg-inline" data-translate-key="vault-welcome">Benvenuto</span><span class="d-none d-lg-inline">, </span><span id="profileNameNavbar" class="me-2 d-none d-lg-inline"></span><svg class="bi bi-large"><use xlink:href="./img/bootstrap-icons.svg#person-circle"/></svg>
+							<span class="text-white d-none d-lg-inline" data-translate-key="vault-welcome">Ciao</span><span class="d-none d-lg-inline">, </span><span id="profileNameNavbar" class="me-2 d-none d-lg-inline"></span><svg class="bi bi-large"><use xlink:href="./img/bootstrap-icons.svg#person-circle"/></svg>
 						</span>
 						<ul class="dropdown-menu">
 							<li id="editProfileMenu"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal" data-translate-key="vault-user-edit" id="showProfileModal">Modifica profilo</a></li>
@@ -137,7 +137,7 @@
 		</div>
 		
 		<!-- Add element modal -->
-		<div class="modal fade" id="chooseElementModal" tabindex="-1" aria-labelledby="chooseElementModalLabel" aria-hidden="true">
+		<div class="modal fade" id="chooseElementModal" tabindex="-1" aria-labelledby="chooseElementModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -171,7 +171,7 @@
 		</div>
 		
 		<!-- Add password modal -->
-		<div class="modal fade" id="addPasswordModal" tabindex="-1" aria-labelledby="addPasswordModalLabel" aria-hidden="true">
+		<div class="modal fade" id="addPasswordModal" tabindex="-1" aria-labelledby="addPasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -241,7 +241,7 @@
 		</div>
 		
 		<!-- Add card modal -->
-		<div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+		<div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -331,7 +331,7 @@
 		</div>
 		
 		<!-- Add note modal -->
-		<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+		<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -371,7 +371,7 @@
 		</div>
 		
 		<!-- Delete modal -->
-		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -391,7 +391,7 @@
 		</div>
 		
 		<!-- Delete multiple modal -->
-		<div class="modal fade" id="deleteMultipleModal" tabindex="-1" aria-labelledby="deleteMultipleModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteMultipleModal" tabindex="-1" aria-labelledby="deleteMultipleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -410,7 +410,7 @@
 		</div>
 		
 		<!-- Devices modal -->
-		<div class="modal fade" id="devicesModal" tabindex="-1" aria-labelledby="devicesModalLabel" aria-hidden="true">
+		<div class="modal fade" id="devicesModal" tabindex="-1" aria-labelledby="devicesModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -442,7 +442,7 @@
 		</div>
 		
 		<!-- Delete device modal -->
-		<div class="modal fade" id="deleteDeviceModal" tabindex="-1" aria-labelledby="deleteDeviceModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteDeviceModal" tabindex="-1" aria-labelledby="deleteDeviceModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -462,7 +462,7 @@
 		</div>
 		
 		<!-- Generator modal -->
-		<div class="modal fade" id="generatorModal" tabindex="-1" aria-labelledby="generatorModalLabel" aria-hidden="true">
+		<div class="modal fade" id="generatorModal" tabindex="-1" aria-labelledby="generatorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -504,7 +504,7 @@
 		</div>
 		
 		<!-- History modal -->
-		<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+		<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -536,7 +536,7 @@
 		</div>
 		
 		<!-- Delete history modal -->
-		<div class="modal fade" id="deleteHistoryModal" tabindex="-1" aria-labelledby="deleteHistoryModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteHistoryModal" tabindex="-1" aria-labelledby="deleteHistoryModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -555,7 +555,7 @@
 		</div>
 		
 		<!-- Menu modal -->
-		<div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+		<div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
 				<div class="modal-content bg-primary text-white">
 					<div class="modal-header">
@@ -565,7 +565,7 @@
 					<div class="modal-body d-flex flex-column align-items-center justify-content-center text-center">
 						<p class="text-white text-decoration-none mx-2 fw-bold" data-bs-dismiss="modal" role="button" data-translate-key="vault-menu-vault">Cassaforte</p>
 						<p class="text-white text-decoration-none mx-2 generatorMenu" href="#" data-bs-toggle="modal" data-bs-target="#generatorModal" role="button" data-translate-key="vault-menu-generator">Generatore</p>
-						<p class="text-white text-decoration-none mx-2" href="#" data-bs-toggle="modal" data-bs-target="#devicesModal" role="button" data-translate-key="vault-menu-devices" id="showDevicesModalMobile">Dispositivi</p>
+						<p class="text-white text-decoration-none mx-2 d-none" href="#" data-bs-toggle="modal" data-bs-target="#devicesModal" role="button" data-translate-key="vault-menu-devices" id="showDevicesModalMobile">Dispositivi</p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal" data-translate-key="vault-menu-close">Chiudi</button>
@@ -575,7 +575,7 @@
 		</div>
 		
 		<!-- Profile modal -->
-		<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+		<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -630,7 +630,7 @@
 		</div>
 		
 		<!-- Logout modal -->
-		<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+		<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -651,7 +651,7 @@
 		</div>
 		
 		<!-- Delete profile -->
-		<div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -673,7 +673,7 @@
 		</div>
 		
 		<!-- Mobile hint -->
-		<div class="modal fade" id="mobileHintModal" tabindex="-1" aria-labelledby="mobileHintModalLabel" aria-hidden="true">
+		<div class="modal fade" id="mobileHintModal" tabindex="-1" aria-labelledby="mobileHintModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">

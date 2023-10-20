@@ -7,44 +7,6 @@ var globalFirstName;
 var globalLastName;
 var globalEmail;
 
-/***********************************/
-/* Web worker for background tasks */
-/**********************************/
-
-var cryptoWorker = new Worker("./js/crypto-worker.js");
-
-cryptoWorker.addEventListener("message", function(e) {
-	var args = e.data.args;
-	if(args[0] == "generateMasterPasswordHashSignin") {
-		const email = $("#signinEmail").val();
-		const masterPasswordHash = args[1];
-		signin(email, masterPasswordHash);
-	}
-	else if(args[0] == "generateMasterPasswordHashToken") {
-		const masterPasswordHash = args[1];
-		const email = args[2];
-		const token = args[3];
-		confirmProfileDeletion(masterPasswordHash, email, token);
-	}
-	else if(args[0] == "signUp") {
-		const masterPasswordHash = args[1];
-		const protectedSymmetricKey = args[2];
-		localStorage.setItem("magicKey", protectedSymmetricKey);
-		if(isLocalMode) {
-			signin("", masterPasswordHash);
-		}
-		else {
-			signup(globalFirstName, globalLastName, globalEmail, masterPasswordHash, protectedSymmetricKey);
-		}
-	}
-	else if(args[0] == "decryptSimmetricKey") {
-		if(args[1] != "") {
-			sessionStorage.setItem("symmetricKey", args[1]);
-			window.location.replace("./vault.html");
-		}
-	}
-});
-
 /***************************/
 /* Check if user is logged */
 /***************************/
@@ -108,13 +70,23 @@ $("#signinButton").click(function(){
 	else {
 		showLoader(true);
 		if(isLocalMode) {
-			cryptoWorker.postMessage({ "args": [ "signUp", password.val(), email.val() ] });
+			startCryptoWorker("signUp", [password.val(), email.val()], "signUpCallback", []);
 		}
 		else {
-			cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHashSignin", password.val(), email.val() ] });
+			startCryptoWorker("generateMasterPasswordHash", [password.val(), email.val()], "signin", [email.val()]);
 		}
 	}
 });
+
+function signUpCallback(masterPasswordHash, protectedSymmetricKey) {
+	localStorage.setItem("magicKey", protectedSymmetricKey);
+	if(isLocalMode) {
+		signin("", masterPasswordHash);
+	}
+	else {
+		signup(globalFirstName, globalLastName, globalEmail, masterPasswordHash, protectedSymmetricKey);
+	}
+}
 
 function signin(email, masterPasswordHash) {
 	if(!isLocalMode) {
@@ -162,7 +134,7 @@ function sendMagicKey(protectedSymmetricKey, isSignUp) {
 			}
 			else {
 				localStorage.setItem("loginType", "profile");
-				cryptoWorker.postMessage({ "args": [ "decryptSimmetricKey", $("#signinPassword").val(), $("#signinEmail").val(), protectedSymmetricKey ] });
+				startCryptoWorker("decryptSimmetricKey", [$("#signinPassword").val(), $("#signinEmail").val(), protectedSymmetricKey], "decryptSimmetricKeyCallback", []);
 			}
 		},
 		function(result) {
@@ -172,12 +144,19 @@ function sendMagicKey(protectedSymmetricKey, isSignUp) {
 	);
 }
 
+function decryptSimmetricKeyCallback(symmetricKey) {
+	if(symmetricKey != "") {
+		sessionStorage.setItem("symmetricKey", symmetricKey);
+		window.location.replace("./vault.html");
+	}
+}
+
 function getMagicKey() {
 	callApi("magicKey", "GET", "", true,
 		function(result){
 			localStorage.setItem("magicKey", result.data.magicKey);
 			localStorage.setItem("loginType", "profile");
-			cryptoWorker.postMessage({ "args": [ "decryptSimmetricKey", $("#signinPassword").val(), $("#signinEmail").val(), result.data.magicKey ] });
+			startCryptoWorker("decryptSimmetricKey", [$("#signinPassword").val(), $("#signinEmail").val(), result.data.magicKey], "decryptSimmetricKeyCallback", []);
 		},
 		function(result) {
 			showLoader(false);
@@ -232,7 +211,7 @@ $("#signupButton").click(function(){
 		$("#signupModal").modal("hide");
 		showLoader(true);
 		showFeedback(translateString("feedback-title-success"), translateString("signin-feedback-key-creation"));
-		cryptoWorker.postMessage({ "args": [ "signUp", password.val(), email.val() ] });
+		startCryptoWorker("signUp", [password.val(), email.val()], "signUpCallback", []);
 	}
 });
 
@@ -275,20 +254,17 @@ function getUrlParameter(sParam) {
 
 $(document).ready(function() {
 	const action = getUrlParameter("a");
-	const email = getUrlParameter("e");
 	const token = getUrlParameter("t");
 	
-	if(action == "verify" && email && token) {
+	if(action == "verify" && token) {
 		showLoader(true);
 		let data = {
-			email: email,
 			token: token
 		};
 		callApi("user/signup/verify", "POST", data, true,
 			function(result){
 				showLoader(false);
-				$("#signinEmail").val(email);
-				$("#signinPassword").focus();
+				$("#signinEmail").focus();
 				showFeedback(translateString("feedback-title-success"), translateString("signin-signup-activation"));
 			},
 			function(result) {
@@ -301,8 +277,7 @@ $(document).ready(function() {
 	if(action == "delete" && !token) {
 		showFeedback(translateString("feedback-title-success"), translateString("vault-profile-delete-description-2"));
 	}
-	else if(action == "delete" && email && token) {
-		$("#deleteModalEmail").val(email);
+	else if(action == "delete" && token) {
 		$("#deleteModalToken").val(token);
 		$("#deleteModal").modal("show");
 	}
@@ -315,10 +290,12 @@ $(document).ready(function() {
 	else if(action == "reset" && !token) {
 		showFeedback(translateString("feedback-title-success"), translateString("signin-password-reset"));
 	}
-	else if(action == "reset" && email && token) {
-		$("#changePasswordModalEmail").val(email);
+	else if(action == "reset" && token) {
 		$("#changePasswordModalToken").val(token);
 		$("#changePasswordModal").modal("show");
+	}
+	else if(action == "changed") {
+		showFeedback(translateString("feedback-title-success"), translateString("signin-password-changed"));
 	}
 });
 
@@ -328,22 +305,26 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	$("#deleteProfileButton").click(function(){
+		var email = $("#deleteModalEmail");
 		var password = $("#deletePassword");
-		if(!password.val().trim().length) {
+		if(!email.val().match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/) && !isLocalMode) {
+			email.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-email-error"));
+		}
+		else if(!password.val().trim().length) {
 			password.focus();
 			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-error"));
 		}
 		else {
 			showLoader(true);
-			cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHashToken", $("#deletePassword").val(), $("#deleteModalEmail").val(), $("#deleteModalToken").val() ] });
+			startCryptoWorker("generateMasterPasswordHash", [$("#deletePassword").val(), $("#deleteModalEmail").val()], "confirmProfileDeletion", [$("#deleteModalEmail").val(), $("#deleteModalToken").val()]);
 			$("#deleteModal").modal("hide");
 		}
 	});
 });
 
-function confirmProfileDeletion(masterPasswordHash, email, token) {
+function confirmProfileDeletion(email, token, masterPasswordHash) {
 	let data = {
-		email: email,
 		token: token,
 		password: masterPasswordHash
 	};
@@ -367,10 +348,15 @@ function confirmProfileDeletion(masterPasswordHash, email, token) {
 
 $(document).ready(function() {
 	$("#changePasswordButton").click(function(e){
+		var email = $("#changePasswordEmail");
 		var oldPassword = $("#changeOldPassword");
 		var password = $("#changePassword");
 		var passwordConfirm = $("#changePasswordConfirm");
-		if(!oldPassword.val().trim().length) {
+		if(!email.val().match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+			email.focus();
+			showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-email-error"));
+		}
+		else if(!oldPassword.val().trim().length) {
 			oldPassword.focus();
 			showFeedback(translateString("feedback-title-error"), translateString("vault-feedback-current-password-error"));
 		}
@@ -393,22 +379,31 @@ $(document).ready(function() {
 		}
 		else {
 			$("#changePasswordModal").modal("hide");
-			/*showLoader(true);
-			callApi("user/delete/verify", "DELETE", data, true,
-				function(result){
-					window.location.replace("./signin.html?a=deleted");
-				},
-				function(result) {
-					showLoader(false);
-					$("#deleteModalEmail").val(email);
-					$("#deleteModalToken").val(token);
-					$("#deleteModal").modal("show");
-					showBackendError(result);
-				}
-			);*/
+			showLoader(true);
+			startCryptoWorker("changePassword", [oldPassword.val(), password.val(), email.val()], "changePasswordCallback", [$("#changePasswordModalToken").val(), email.val()]);
 		}
 	});
 });
+
+function changePasswordCallback(token, email, masterPasswordHash, newMasterPasswordHash) {
+	let data = {
+		token: token,
+		oldPassword: masterPasswordHash,
+		newPassword: newMasterPasswordHash
+	};
+	callApi("user/password/edit", "PUT", data, true,
+		function(result){
+			window.location.replace("./signin.html?a=changed");
+		},
+		function(result) {
+			showLoader(false);
+			$("#changePasswordEmail").val(email);
+			$("#changePasswordModalToken").val(token);
+			$("#changePasswordModal").modal("show");
+			showBackendError(result);
+		}
+	);
+}
 
 /**************/
 /* Local mode */

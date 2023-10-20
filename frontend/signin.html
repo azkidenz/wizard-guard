@@ -14,7 +14,7 @@
 	<body class="user-select-none">
 	
 		<div id="loading" class="vh-100 d-flex justify-content-center align-items-center">
-			<div class="spinner-border text-theme" role="status"></div>
+			<img draggable="false" src = "./img/loader.svg" width="60" />
 		</div>
 	
 		<div id="mainContent" class="d-none">
@@ -88,7 +88,7 @@
 		</div>
 			
 		<!-- Reset password modal -->
-		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -114,7 +114,7 @@
 		</div>
 		
 		<!-- SignUp modal -->
-		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -170,7 +170,7 @@
 		</div>
 		
 		<!-- Local mode modal -->
-		<div class="modal fade" id="localModeModal" tabindex="-1" aria-labelledby="localModeModalLabel" aria-hidden="true">
+		<div class="modal fade" id="localModeModal" tabindex="-1" aria-labelledby="localModeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -190,7 +190,7 @@
 		</div>
 		
 		<!-- Delete modal -->
-		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -201,13 +201,16 @@
 						<p data-translate-key="vault-profile-delete-description-1">Procedendo eliminerai completamente il tuo profilo e tutti i dati salvati.</p>
 						<p class="fw-bold mb-4" data-translate-key="vault-profile-delete-description-3">Attenzione: i tuoi dati saranno persi per sempre.</p>
 						<input type="hidden" id="deleteModalToken" value="" >
-						<input type="hidden" id="deleteModalEmail" value="" >
+						<div class="form-floating">
+							<input type="email" class="form-control rounded-0 rounded-top border-bottom-0 shadow-none" id="deleteModalEmail" name="deleteModalEmail" placeholder="example@example.com">
+							<label for="deleteModalEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+						</div>
 						<div class="input-group">
 							<div class="form-floating">
-								<input type="password" class="form-control rounded-top-0 rounded-start border-end-0 shadow-none" id="deletePassword" name="deletePassword" placeholder="**********">
+								<input type="password" class="form-control rounded-top-0 border-end-0 shadow-none" id="deletePassword" name="deletePassword" placeholder="**********">
 								<label for="deletePassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="signin-input-password">La tua password</span></label>
 							</div>
-							<span class="input-group-text rounded-top-0 rounded-end bg-eye border-0 border-top border-bottom border-end" role="button" id="deletePasswordEye"><svg id="eyeDeletePassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+							<span class="input-group-text rounded-top-0 bg-eye border-0 border-top border-bottom border-end" role="button" id="deletePasswordEye"><svg id="eyeDeletePassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -219,7 +222,7 @@
 		</div>
 		
 		<!-- Change password modal -->
-		<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+		<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -229,6 +232,10 @@
 					<div class="modal-body">
 						<p data-translate-key="signin-change-password-description-1">Come da te richiesto puoi impostare la tua nuova password qui sotto. Se non lo hai richiesto tu, ti consigliamo di sceglierne una più forte.</p>
 						<input type="hidden" id="changePasswordModalToken" value="" >
+						<div class="form-floating mb-3">
+							<input type="email" class="form-control rounded shadow-none" id="changePasswordEmail" name="changePasswordEmail" placeholder="example@example.com">
+							<label for="changePasswordEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+						</div>
 						<div class="input-group">
 							<div class="form-floating mx-0">
 								<input type="password" class="form-control rounded-0 rounded-top-start shadow-none border border-bottom-0 border-end-0" id="changeOldPassword" name="changeOldPassword" placeholder="**********">
@@ -266,7 +273,7 @@
 		</div>
 		
 		<!-- Feedback modal -->
-		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">

@@ -1,10 +1,28 @@
+/***********************************/
+/* Web worker for background tasks */
+/**********************************/
+
+var cryptoWorker = new Worker("./js/crypto-worker.js");
+
+cryptoWorker.addEventListener("message", function(e) {
+	var args = e.data.args;
+	const callback = args[1];
+	const callbackParameters = args[2];
+	const results = args[3];
+	const parameters = callbackParameters.concat(results);
+	window[callback](...parameters);
+});
+
+function startCryptoWorker(functionName, functionParameters, callback, callbackParameters) {
+	cryptoWorker.postMessage({ "args": [ functionName, functionParameters, callback, callbackParameters ] });
+}
+
 /***************/
 /* Backend API */
 /***************/
 
 function callApi(url, type, data, async, onSuccess, onError) {
 	const backend = "https://api.wizardguard.org/v1/";
-	//const backend = "https://onyxsoftware.altervista.org/wizardguard/mock/";
 	$.ajax({
 		url: backend + url,
 		type: type,

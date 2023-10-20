@@ -5,21 +5,6 @@
 var readOnlyMode = false;
 var itemsCounter = 1;
 
-/***********************************/
-/* Web worker for background tasks */
-/**********************************/
-
-var cryptoWorker = new Worker("./js/crypto-worker.js");
-
-cryptoWorker.addEventListener("message", function(e) {
-	var args = e.data.args;
-	if(args[0] == "generateMasterPasswordHash") {
-		showLoader(false);
-		const masterPasswordHash = args[1];
-		changePasswordRequest(masterPasswordHash);
-	}
-});
-
 /***************************/
 /* Check if user is logged */
 /***************************/
@@ -76,6 +61,8 @@ $(document).ready(function() {
 	else {
 		const firstName = localStorage.getItem("firstName");
 		$("#profileNameNavbar").text(firstName);
+		$("#showDevicesModal").removeClass("d-none");
+		$("#showDevicesModalMobile").removeClass("d-none");
 	}
 });
 
@@ -521,7 +508,11 @@ $(document).ready(function () {
 
 function setMainTable() {
 	var isEmptyTable = true;
-	initVault();
+	
+	if(localStorage.getItem("loginType") != "local") {
+		initVault();
+	}
+	
 	$('#newElementButton').prop('disabled', false);
 	const credentialsTableBody = $("#mainTableBody");
 	for(var i=0; i<localStorage.length; i++) {
@@ -704,7 +695,10 @@ function updateElementsInVault(ids) {
 		};
 		elements.push(element);
 	}
-	callApi("vault", "PUT", elements, true,
+	let data = {
+		vault: elements
+	};
+	callApi("vault", "PUT", data, true,
 		function(result){},
 		function(result){}
 	);
@@ -722,9 +716,12 @@ function createElementsInVault(ids) {
 			value: value,
 			updatedAt: timestamp
 		};
-		elements.push(element);
+		elements.push(element);	
 	}
-	callApi("vault", "POST", elements, true,
+	let data = {
+		vault: elements
+	};
+	callApi("vault", "POST", data, true,
 		function(result){
 			for(var i=0; i<ids.length; i++) {
 				var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
@@ -918,7 +915,9 @@ function initDeleteButton() {
 		if($('#mainTable tr').length == 0 || $("#mainTable tr.d-none").length == $('#mainTable tr').length) {
 			$("#noElements").removeClass("d-none");
 		}
-		deleteElementsFromVault(elementIds);
+		if(localStorage.getItem("loginType") != "local") {
+			deleteElementsFromVault(elementIds);
+		}
 	});
 }
 
@@ -938,7 +937,9 @@ function deleteElement(id) {
 	}
 	var elementIds = [];
 	elementIds.push(id);
-	deleteElementsFromVault(elementIds);
+	if(localStorage.getItem("loginType") != "local") {
+		deleteElementsFromVault(elementIds);
+	}
 }
 
 function deleteElementsFromVault(ids) {
@@ -1128,11 +1129,13 @@ function saveElement(id, modalId) {
 	setFavicon(id);
 	setDeleteButton();
 	initCheckboxes();
-	if(id.includes("local-")) {
-		vaultCreateElement(id);
-	}
-	else {
-		vaultUpdateElement(id);
+	if(localStorage.getItem("loginType") != "local") {
+		if(id.includes("local-")) {
+			vaultCreateElement(id);
+		}
+		else {
+			vaultUpdateElement(id);
+		}
 	}
 }
 
@@ -1302,9 +1305,9 @@ $(document).ready(function() {
 $("#showProfileModal").on( "click", function() {
 	callApi("user/profile", "GET", "", true,
 		function(result){
-			localStorage.setItem("firstName", result.data.user.name.firstName);
-			localStorage.setItem("lastName", result.data.user.name.lastName);
-			localStorage.setItem("email", result.data.user.email);
+			localStorage.setItem("firstName", result.data.name.firstName);
+			localStorage.setItem("lastName", result.data.name.lastName);
+			localStorage.setItem("email", result.data.email);
 		},
 		function(result) {}
 	);
@@ -1334,7 +1337,7 @@ $("#editProfileButton").click(function(){
 function editProfile(firstName, lastName, email, password) {
 	if(password.length > 0) {
 		showLoader(true);
-		cryptoWorker.postMessage({ "args": [ "generateMasterPasswordHash", password, email ] });
+		startCryptoWorker("generateMasterPasswordHash", [password, email], "changePasswordRequest", []);
 	}
 	else {
 		let data = {
@@ -1345,6 +1348,7 @@ function editProfile(firstName, lastName, email, password) {
 		};
 		callApi("user/profile", "PUT", data, true,
 			function(result){
+				$("#profileNameNavbar").text(firstName);
 				localStorage.setItem("firstName", firstName);
 				localStorage.setItem("lastName", lastName);
 				showFeedback(translateString("feedback-title-success"), translateString("vault-user-edit-success"));
@@ -1357,6 +1361,7 @@ function editProfile(firstName, lastName, email, password) {
 }
 
 function changePasswordRequest(masterPasswordHash) {
+	showLoader(false);
 	let data = {
 		password: masterPasswordHash
 	};
