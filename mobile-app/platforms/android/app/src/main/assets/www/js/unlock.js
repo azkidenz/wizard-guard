@@ -9,26 +9,6 @@ else {
 	showLoader(false);
 }
 
-/***********************************/
-/* Web worker for background tasks */
-/***********************************/
-
-var cryptoWorker = new Worker("./js/crypto-worker.js");
-
-cryptoWorker.addEventListener("message", function(e) {
-	var args = e.data.args;
-	if(args[0] == "decryptSimmetricKey") {
-		if(args[1] == "") {
-			showLoader(false);
-			showFeedback(translateString("feedback-title-error"), translateString("unlock-feedback-password-error"));
-		}
-		else {
-			sessionStorage.setItem("symmetricKey", args[1]);
-			window.location.replace("./vault.html");
-		}
-	}
-});
-
 /****************/
 /* Unlock vault */
 /****************/
@@ -47,9 +27,20 @@ $("#unlockButton").click(function(){
 	}
 	else {
 		showLoader(true);
-		cryptoWorker.postMessage({ "args": [ "decryptSimmetricKey", password.val(), localStorage.getItem("email") == undefined ? "" : localStorage.getItem("email"), localStorage.getItem("magicKey") ] });
+		startCryptoWorker("decryptSimmetricKey", [password.val(), localStorage.getItem("email") == undefined ? "" : localStorage.getItem("email"), localStorage.getItem("magicKey")], "decryptSimmetricKeyCallback", []);
 	}
 });
+
+function decryptSimmetricKeyCallback(symmetricKey) {
+	if(symmetricKey == "") {
+		showLoader(false);
+		showFeedback(translateString("feedback-title-error"), translateString("unlock-feedback-password-error"));
+	}
+	else {
+		sessionStorage.setItem("symmetricKey", symmetricKey);
+		window.location.replace("./vault.html");
+	}
+}
 
 /**********************/
 /* Show/hide password */

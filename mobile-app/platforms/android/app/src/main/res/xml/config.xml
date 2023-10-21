@@ -13,6 +13,7 @@
     <allow-intent href="https://*/*" />
     <allow-intent href="mailto:*" />
     <preference name="loglevel" value="DEBUG" />
+    <preference name="hostname" value="wizardguard.org" />
     <preference name="orientation" value="portrait" />
     <preference name="AndroidWindowSplashScreenAnimatedIcon" value="platforms/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <preference name="AndroidWindowSplashScreenBackground" value="#1B3F91" />

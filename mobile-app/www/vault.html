@@ -421,6 +421,9 @@
 						<span data-translate-key="vault-devices-description">
 							Questo è l'elenco di tutti i dispositivi in cui hai effettuato l'accesso. Se hai smesso di utilizzarne uno o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.
 						</span>
+						<div id="devicesTableLoading" class="mt-5 mb-4 text-center">
+							<div class="spinner-border text-theme" role="status"></div>
+						</div>
 						<table class="table mt-3 d-none" id="devicesTable">
 							<thead>
 								<tr>
@@ -432,7 +435,7 @@
 							<tbody id="devicesTableBody">
 							</tbody>
 						</table>
-						<p id="devicesTableEmpty" class="text-theme mt-3" data-translate-key="vault-devices-empty">Per visualizzare gli altri dispositivi connessi verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.</p>
+						<p id="devicesTableEmpty" class="text-theme mt-3 d-none" data-translate-key="vault-devices-empty">Per visualizzare gli altri dispositivi connessi verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.</p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary no-shadow" data-bs-dismiss="modal" data-translate-key="vault-menu-close">Chiudi</button>
@@ -449,8 +452,13 @@
 						<h1 class="modal-title fs-5" id="deleteDeviceModalLabel" data-translate-key="vault-delete-device-title">Elimina dispositivo</h1>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
-					<div class="modal-body" data-translate-key="vault-delete-device-description">
-						Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l'accesso.
+					<div class="modal-body">
+						<div data-translate-key="vault-delete-device-description-1">
+							Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l'accesso.
+						</div>
+						<div id="currentDeviceWarning" class="mt-3 fw-bold d-none" data-translate-key="vault-delete-device-description-2">
+							Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l'accesso.
+						</div>
 					</div>
 					<input type="hidden" id="deleteDeviceId" value="">
 					<div class="modal-footer">
@@ -583,37 +591,42 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<span data-translate-key="vault-profile-description-1">
-							Modifica i tuoi dati anagrafici.
-						</span>
-						<div class="form-floating mt-3">
-							<input type="text" class="form-control shadow-none rounded-0 rounded-top border-bottom-0" id="profileFirstName" name="profileFirstName" placeholder="*">
-							<label for="profileFirstName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-first-name">Il tuo nome</span></label>
+						<div id="profileLoading" class="my-5 text-center">
+							<div class="spinner-border text-theme" role="status"></div>
 						</div>
-						<div class="form-floating mb-3">
-							<input type="text" class="form-control shadow-none rounded-0 rounded-bottom" id="profileLastName" name="profileLastName" placeholder="*">
-							<label for="profileLastName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-last-name">Il tuo cognome</span></label>
-						</div>
-						<p class="small text-theme mb-3" data-translate-key="vault-profile-description-2">
-							Indirizzo email in sola lettura. Se desideri modificarlo contatta il supporto.
-						</p>
-						<div class="form-floating mt-3">
-							<input type="email" class="form-control rounded shadow-none" id="profileEmail" name="profileEmail" placeholder="example@example.com" readonly>
-							<label for="profileEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
-						</div>
-						<div class="mt-3 fw-bold" data-translate-key="vault-profile-description-3">Richiedi cambio password</div>
-						<div class="my-3" data-translate-key="vault-profile-description-4">
-							Inserisci la password attuale e premi su "Conferma" per ricevere le istruzioni di cambio password al tuo indirizzo email.
-						</div>
-						<div class="input-group">
-							<div class="form-floating mx-0">
-								<input type="password" class="form-control rounded-0 rounded-start shadow-none border-end-0" id="profileOldPassword" name="profileOldPassword" placeholder="**********">
-								<label for="profileOldPassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="vault-profile-current-password">Password attuale</span></label>
+						<div id="profileContent" class="d-none">
+							<span data-translate-key="vault-profile-description-1">
+								Modifica i tuoi dati anagrafici.
+							</span>
+							<div class="form-floating mt-3">
+								<input type="text" class="form-control shadow-none rounded-0 rounded-top border-bottom-0" id="profileFirstName" name="profileFirstName" placeholder="*">
+								<label for="profileFirstName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-first-name">Il tuo nome</span></label>
 							</div>
-							<span class="input-group-text rounded-0 rounded-end bg-eye border border-start-0" role="button" id="profileOldPasswordEye"><svg id="eyeProfileOldPassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
-						</div>
-						<div class="mt-3 small" data-translate-key="signin-feedback-password-complexity-error">
-							La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.
+							<div class="form-floating mb-3">
+								<input type="text" class="form-control shadow-none rounded-0 rounded-bottom" id="profileLastName" name="profileLastName" placeholder="*">
+								<label for="profileLastName"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="signin-input-last-name">Il tuo cognome</span></label>
+							</div>
+							<p class="small text-theme mb-3" data-translate-key="vault-profile-description-2">
+								Indirizzo email in sola lettura. Se desideri modificarlo contatta il supporto.
+							</p>
+							<div class="form-floating mt-3">
+								<input type="email" class="form-control rounded shadow-none" id="profileEmail" name="profileEmail" placeholder="example@example.com" readonly>
+								<label for="profileEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+							</div>
+							<div class="mt-3 fw-bold" data-translate-key="vault-profile-description-3">Richiedi cambio password</div>
+							<div class="my-3" data-translate-key="vault-profile-description-4">
+								Inserisci la password attuale e premi su "Conferma" per ricevere le istruzioni di cambio password al tuo indirizzo email.
+							</div>
+							<div class="input-group">
+								<div class="form-floating mx-0">
+									<input type="password" class="form-control rounded-0 rounded-start shadow-none border-end-0" id="profileOldPassword" name="profileOldPassword" placeholder="**********">
+									<label for="profileOldPassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="vault-profile-current-password">Password attuale</span></label>
+								</div>
+								<span class="input-group-text rounded-0 rounded-end bg-eye border border-start-0" role="button" id="profileOldPasswordEye"><svg id="eyeProfileOldPassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+							</div>
+							<div class="mt-3 small" data-translate-key="signin-feedback-password-complexity-error">
+								La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.
+							</div>
 						</div>
 					</div>
 					<div class="modal-footer d-flex justify-content-between">
