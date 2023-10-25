@@ -311,6 +311,10 @@ var translations = {
 		'en': 'Light/Dark theme',
 		'it': 'Tema chiaro/scuro'
 	},
+	'vault-user-force-resync': {
+		'en': 'Force resync',
+		'it': 'Forza sincronizzazione'
+	},
 	'vault-sidebar-filter': {
 		'en': 'Filter the vault',
 		'it': 'Filtra la cassaforte'

@@ -1,1 +1,0 @@
-require('../node_modules/bootstrap-icons/font/bootstrap-icons.css');

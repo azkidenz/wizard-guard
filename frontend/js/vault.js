@@ -55,6 +55,7 @@ $('#profileModal').on('shown.bs.modal', function (e) {
 $(document).ready(function() {
 	if(localStorage.getItem("loginType") == "local") {
 		$("#editProfileMenu").addClass("d-none");
+		$("#forceResync").addClass("d-none");
 		$("#localLogout").removeClass("d-none");
 		$("#profileNameNavbar").text("Wizard");
 	}
@@ -1226,6 +1227,7 @@ function loadDevices() {
 				device.id = result.data.sessions[i].id;
 				device.useragent = result.data.sessions[i].userAgent.device + " - " + result.data.sessions[i].userAgent.client;
 				device.type = result.data.sessions[i].userAgent.type;
+				device.country = result.data.sessions[i].location;
 				device.current = false;
 				if(result.data.sessions[i].id == result.data.current) {
 					device.current = true;
@@ -1250,16 +1252,17 @@ function initDevices(devices) {
 		showDevicesLoader(false, true);
 	}
 	for(var i=0; i<devices.length; i++) {
-		devicesTableBody.append(createDevice(devices[i].id, devices[i].useragent, devices[i].type, devices[i].current));
+		devicesTableBody.append(createDevice(devices[i].id, devices[i].useragent, devices[i].type, devices[i].country, devices[i].current));
 	}
 	setDeleteDeviceButtons();
 }
 
-function createDevice(id, userAgent, type, isCurrent) {
+function createDevice(id, userAgent, type, country, isCurrent) {
 	var tagColor = "btn-outline-primary";
 	var tagIcon = "globe-americas";
 	var tagTranslation = "vault-device-type-web-browser";
 	var currentDeviceClass = "";
+	var currentDeviceCode = "";
 	if(type == "extension") {
 		tagColor = "btn-outline-primary";
 		tagIcon = "code-square";
@@ -1271,13 +1274,25 @@ function createDevice(id, userAgent, type, isCurrent) {
 		tagTranslation = "vault-device-type-mobile-app";
 	}
 	if(isCurrent) {
-		userAgent = userAgent+"<br>"+"<span class='small text-theme' data-translate-key='vault-devices-current'>"+translateString("vault-devices-current")+"</span>";
 		currentDeviceClass = "current-device";
+		currentDeviceCode = "<tr><td></td><td class='align-middle'><span class='small text-theme' data-translate-key='vault-devices-current'>"+translateString("vault-devices-current")+"</span></td></tr>";
 	}
 	var tagDescription = translateString(tagTranslation);
 	const row = `
 		<tr id="device-${id}" class="${currentDeviceClass}">
-			<td class="align-middle">${userAgent}</td>
+			<td class="align-middle">
+				<table>
+					<tr>
+						<td>
+							<div class="align-middle d-flex">
+								<img draggable="false" class="me-3" src="./img/flags/${country}.svg" width="20" />
+							</div>
+						</td>
+						<td class="align-middle">${userAgent}</td>
+					</tr>
+					${currentDeviceCode}
+				</table>
+			</td>
 			<td class="align-middle"><span class="btn ${tagColor} btn-sm mx-2 pe-none"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#${tagIcon}"/></svg><span class="d-none d-md-inline ms-2" data-translate-key="${tagTranslation}">${tagDescription}</span></td>
 			<td class="align-middle"><span class="btn btn-danger deleteDeviceButton" role="button" data-bs-toggle="modal" data-bs-target="#deleteDeviceModal" wiz-id="${id}"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#trash3" /></svg></span></td>
 		</tr>`
@@ -1497,4 +1512,12 @@ $(document).ready(function() {
 	$("#profileOldPasswordEye").click(function(){
 		clickEye("#profileOldPassword", "#eyeProfileOldPassword", false);
 	});
+});
+
+/****************/
+/* Force resync */
+/****************/
+
+$("#forceResync").click(function(){
+	location.reload();
 });
