@@ -1438,15 +1438,15 @@ function editProfile(firstName, lastName, email, password) {
 }
 
 function changePasswordRequest(masterPasswordHash) {
-	showLoader(false);
 	let data = {
 		password: masterPasswordHash
 	};
 	callApi("user/password/reset", "POST", data, true,
 		function(result){
-			signout("reset");
+			signout("password");
 		},
 		function(result) {
+			showLoader(false);
 			showBackendError(result);
 		}
 	);

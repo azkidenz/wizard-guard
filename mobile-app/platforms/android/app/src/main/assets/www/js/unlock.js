@@ -38,7 +38,22 @@ function decryptSimmetricKeyCallback(symmetricKey) {
 	}
 	else {
 		sessionStorage.setItem("symmetricKey", symmetricKey);
-		window.location.replace("./vault.html");
+		if(localStorage.getItem("loginType") == "local") {
+			window.location.replace("./vault.html");
+		}
+		else {
+			callApi("user/profile", "GET", "", true,
+				function(result){
+					localStorage.setItem("firstName", result.data.name.firstName);
+					localStorage.setItem("lastName", result.data.name.lastName);
+					localStorage.setItem("email", result.data.email);
+					window.location.replace("./vault.html");
+				},
+				function(result) {
+					window.location.replace("./vault.html");
+				}
+			);
+		}
 	}
 }
 

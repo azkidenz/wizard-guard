@@ -1,4 +1,4 @@
-importScripts("./crypto.js");
+importScripts("./crypto.js?v202310281736");
 
 self.addEventListener("message", function(e) {
 	
@@ -22,6 +22,9 @@ self.addEventListener("message", function(e) {
 	}
 	else if(functionName == "generateProtectedSimmetricKey") {
 		results[0] = generateProtectedSimmetricKey(functionParameters[0], functionParameters[1]);
+	}
+	else if(functionName == "generateProtectedSimmetricKeyFromCurrentMasterKey") {
+		results[0] = generateProtectedSimmetricKey(functionParameters[0], functionParameters[1], functionParameters[2]);
 	}
 	else if(functionName == "decryptSimmetricKey") {
 		try {

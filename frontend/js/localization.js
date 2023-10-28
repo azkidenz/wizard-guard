@@ -276,12 +276,12 @@ var translations = {
 		'it': 'Generatore'
 	},
 	'vault-menu-devices': {
-		'en': 'Devices',
-		'it': 'Dispositivi'
+		'en': 'Sessions',
+		'it': 'Sessioni'
 	},
 	'vault-devices-device': {
-		'en': 'Device',
-		'it': 'Dispositivo'
+		'en': 'Session',
+		'it': 'Sessione'
 	},
 	'vault-menu-close': {
 		'en': 'Close',
@@ -520,32 +520,32 @@ var translations = {
 		'it': 'Sei sicuro di voler eliminare TUTTI gli elementi selezionati? Questa azione non è reversibile e questi dati saranno persi per sempre.'
 	},
 	'vault-devices-title': {
-		'en': 'Your devices',
-		'it': 'I tuoi dispositivi'
+		'en': 'Your sessions',
+		'it': 'Le tue sessioni'
 	},
 	'vault-devices-description': {
-		'en': 'This is a list of all the devices you are logged into. If you have stopped using one or if you detect unauthorized access take steps to disconnect it immediately.',
-		'it': 'Questo è l\'elenco di tutti i dispositivi in cui hai effettuato l\'accesso. Se hai smesso di utilizzarne uno o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.'
+		'en': 'This is a list of all the sessions you are logged into. If you have stopped using a device or if you detect unauthorized access take steps to disconnect it immediately.',
+		'it': 'Questo è l\'elenco di tutte le sessioni in cui hai effettuato l\'accesso. Se hai smesso di utilizzare un dispositivo o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.'
 	},
 	'vault-devices-current': {
-		'en': 'This device',
-		'it': 'Questo dispositivo'
+		'en': 'This session',
+		'it': 'Questa sessione'
 	},
 	'vault-devices-empty': {
-		'en': 'To view other connected devices verify that you are logged into your WizardGuard account and that the connection is active.',
-		'it': 'Per visualizzare gli altri dispositivi connessi verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.'
+		'en': 'To view other active sessions verify that you are logged into your WizardGuard account and that the connection is active.',
+		'it': 'Per visualizzare le altre sessioni attive verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.'
 	},
 	'vault-delete-device-title': {
-		'en': 'Delete device',
-		'it': 'Elimina dispositivo'
+		'en': 'Delete session',
+		'it': 'Elimina sessione'
 	},
 	'vault-delete-device-description-1': {
-		'en': 'Are you sure you want to delete this device? You will have to log in again on the device once disconnected.',
-		'it': 'Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l\'accesso sul dispositivo una volta scollegato.'
+		'en': 'Are you sure you want to delete this session? You will have to log in again on the device once disconnected.',
+		'it': 'Sei sicuro di voler eliminare questa sessione? Dovrai effettuare nuovamente l\'accesso sul dispositivo una volta scollegato.'
 	},
 	'vault-delete-device-description-2': {
-		'en': 'You are about to delete your current device. You will also be logged out of this session.',
-		'it': 'Stai per eliminare il tuo dispositivo attuale. Verrai disconesso anche da questa sessione.'
+		'en': 'You are about to delete your current session. You will also be logged out of this device.',
+		'it': 'Stai per eliminare la tua sessione attuale. Verrai disconesso anche da questo dispositivo.'
 	},
 	'vault-generator-title': {
 		'en': 'Password generator',

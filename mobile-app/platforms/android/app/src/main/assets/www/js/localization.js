@@ -295,6 +295,10 @@ var translations = {
 		'en': 'Edit profile',
 		'it': 'Modifica profilo'
 	},
+	'vault-user-edit-connection-error': {
+		'en': 'Unable to retrieve profile data. Check your internet connection.',
+		'it': 'Impossibile recuperare i dati del profilo. Verifica la tua connessione a internet.'
+	},
 	'vault-user-edit-success': {
 		'en': 'Your profile has been updated correctly.',
 		'it': 'Il tuo profilo è stato aggiornato correttamente.'
@@ -306,6 +310,10 @@ var translations = {
 	'vault-user-theme-edit': {
 		'en': 'Light/Dark theme',
 		'it': 'Tema chiaro/scuro'
+	},
+	'vault-user-force-resync': {
+		'en': 'Force resync',
+		'it': 'Forza sincronizzazione'
 	},
 	'vault-sidebar-filter': {
 		'en': 'Filter the vault',
@@ -531,9 +539,13 @@ var translations = {
 		'en': 'Delete device',
 		'it': 'Elimina dispositivo'
 	},
-	'vault-delete-device-description': {
-		'en': 'Are you sure you want to delete this device? You will need to log in again.',
-		'it': 'Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l\'accesso.'
+	'vault-delete-device-description-1': {
+		'en': 'Are you sure you want to delete this device? You will have to log in again on the device once disconnected.',
+		'it': 'Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l\'accesso sul dispositivo una volta scollegato.'
+	},
+	'vault-delete-device-description-2': {
+		'en': 'You are about to delete your current device. You will also be logged out of this session.',
+		'it': 'Stai per eliminare il tuo dispositivo attuale. Verrai disconesso anche da questa sessione.'
 	},
 	'vault-generator-title': {
 		'en': 'Password generator',
