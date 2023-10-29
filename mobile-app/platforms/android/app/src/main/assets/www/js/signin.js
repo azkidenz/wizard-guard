@@ -104,7 +104,7 @@ function signin(email, masterPasswordHash) {
 					sendMagicKey(localStorage.getItem("magicKey"), false);
 				}
 				else {
-					getMagicKey();
+					getMagicKey($("#signinPassword").val(), $("#signinEmail").val(), "decryptSimmetricKeyCallback", []);
 				}
 			},
 			function(result) {
@@ -151,12 +151,12 @@ function decryptSimmetricKeyCallback(symmetricKey) {
 	}
 }
 
-function getMagicKey() {
+function getMagicKey(password, email, callback, callbackParameters) {
 	callApi("magicKey", "GET", "", true,
 		function(result){
 			localStorage.setItem("magicKey", result.data.magicKey);
 			localStorage.setItem("loginType", "profile");
-			startCryptoWorker("decryptSimmetricKey", [$("#signinPassword").val(), $("#signinEmail").val(), result.data.magicKey], "decryptSimmetricKeyCallback", []);
+			startCryptoWorker("decryptSimmetricKey", [password, email, result.data.magicKey], callback, callbackParameters);
 		},
 		function(result) {
 			showLoader(false);
@@ -287,10 +287,10 @@ $(document).ready(function() {
 	else if(action == "expired") {
 		showFeedback(translateString("feedback-title-error"), translateString("signin-session-expired"));
 	}
-	else if(action == "reset" && !token) {
+	else if(action == "password" && !token) {
 		showFeedback(translateString("feedback-title-success"), translateString("signin-password-reset"));
 	}
-	else if(action == "reset" && token) {
+	else if(action == "password" && token) {
 		$("#changePasswordModalToken").val(token);
 		$("#changePasswordModal").modal("show");
 	}
@@ -380,29 +380,83 @@ $(document).ready(function() {
 		else {
 			$("#changePasswordModal").modal("hide");
 			showLoader(true);
-			startCryptoWorker("changePassword", [oldPassword.val(), password.val(), email.val()], "changePasswordCallback", [$("#changePasswordModalToken").val(), email.val()]);
+			startCryptoWorker("changePassword", [oldPassword.val(), password.val(), email.val()], "changePasswordCallback", [$("#changePasswordModalToken").val(), email.val(), oldPassword.val(), password.val()]);
 		}
 	});
 });
 
-function changePasswordCallback(token, email, masterPasswordHash, newMasterPasswordHash) {
+function changePasswordCallback(token, email, masterPassword, newMasterPassword, masterPasswordHash, newMasterPasswordHash) {
 	let data = {
-		token: token,
-		oldPassword: masterPasswordHash,
-		newPassword: newMasterPasswordHash
+		email: email,
+		password: masterPasswordHash
 	};
-	callApi("user/password/edit", "PUT", data, true,
+	callApi("user/signin", "POST", data, true,
 		function(result){
-			window.location.replace("./signin.html?a=changed");
+			getMagicKey(masterPassword, email, "changePasswordChangeMagicKey", [token, email, masterPassword, newMasterPassword, masterPasswordHash, newMasterPasswordHash]);
 		},
 		function(result) {
-			showLoader(false);
-			$("#changePasswordEmail").val(email);
-			$("#changePasswordModalToken").val(token);
-			$("#changePasswordModal").modal("show");
-			showBackendError(result);
+			changePasswordFail(result, email, token);
 		}
 	);
+}
+
+function changePasswordChangeMagicKey(token, email, masterPassword, newMasterPassword, masterPasswordHash, newMasterPasswordHash, symmetricKey) {
+	if(symmetricKey) {
+		startCryptoWorker("generateProtectedSimmetricKeyFromCurrentMasterKey", [newMasterPassword, email, symmetricKey], "changePasswordChangeMagicKeyCallback", [token, email, masterPasswordHash, newMasterPasswordHash]);
+	}
+	else {
+		changePasswordFail(undefined, email, token);
+	}
+}
+
+function changePasswordChangeMagicKeyCallback(token, email, masterPasswordHash, newMasterPasswordHash, protectedSymmetricKey) {
+	let data = {
+		magicKey: protectedSymmetricKey
+	};
+	callApi("magicKey", "POST", data, true,
+		function(result){
+			let data = {
+				token: token,
+				oldPassword: masterPasswordHash,
+				newPassword: newMasterPasswordHash
+			};
+			callApi("user/password/edit", "PUT", data, true,
+				function(result){
+					callApi("user/signout", "POST", "", false, function(result){}, function(result) {});
+					clearData();
+					window.location.replace("./signin.html?a=changed");
+				},
+				function(result) {
+					// Rollback
+					let data = {
+						magicKey: localStorage.getItem("magicKey")
+					};
+					callApi("magicKey", "POST", data, true,
+						function(result){
+							changePasswordFail(undefined, email, token);
+						},
+						function(result){
+							changePasswordFail(result, email, token);
+						}
+					);
+				}
+			);
+		},
+		function(result) {
+			changePasswordFail(result, email, token);
+		}
+	);
+}
+
+function changePasswordFail(result, email, token) {
+	/* TODO logout */ 
+	callApi("user/signout", "POST", "", false, function(result){}, function(result) {});
+	clearData();
+	showLoader(false);
+	$("#changePasswordEmail").val(email);
+	$("#changePasswordModalToken").val(token);
+	$("#changePasswordModal").modal("show");
+	showBackendError(result);
 }
 
 /**************/

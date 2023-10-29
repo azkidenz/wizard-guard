@@ -23,7 +23,6 @@ function startCryptoWorker(functionName, functionParameters, callback, callbackP
 
 function callApi(url, type, data, async, onSuccess, onError) {
 	const backend = "https://api.wizardguard.org/v1/";
-	console.log("Chiamo "+url+" con "+JSON.stringify(data));
 	$.ajax({
 		url: backend + url,
 		type: type,
@@ -83,7 +82,6 @@ function getAccessToken(url, type, data, async, onSuccess, onError) {
 }
 
 function showBackendError(result) {
-	console.log(JSON.stringify(result));
 	var details = translateString("feedback-generic-error");
 	if(result && result.responseJSON && result.responseJSON.status == "error") {
 		details = result.responseJSON.message;

@@ -836,8 +836,8 @@ function showElement(id, readOnly) {
 		$("#title-addCardModal").val(element.title);
 		$("#cardHolder").val(element.holder);
 		$("#cardNumber").val(formatCardValue(element.number));
-		$("#cardExpirationMonth").val(element.expiration.month);
-		$("#cardExpirationYear").val(element.expiration.year);
+		$("#cardExpirationMonth").val(element.expirationMonth);
+		$("#cardExpirationYear").val(element.expirationYear);
 		$("#cardIssuer").val(element.issuer);
 		$("#cardCvv").val(element.cvv);
 		$("#cardPin").val(element.pin);
@@ -1052,7 +1052,6 @@ function saveElement(id, modalId) {
 		else if(modalId == "addCardModal") {
 			type = "cards";
 			element.type = "cards";
-			element.expiration = [];
 		}
 		else if(modalId == "addNoteModal") {
 			element.type = "note";
@@ -1084,8 +1083,8 @@ function saveElement(id, modalId) {
 		element.title = $("#title-addCardModal").val();
 		element.holder = $("#cardHolder").val();
 		element.number = $("#cardNumber").val().replace(/\s/g, '');
-		element.expiration.month = $("#cardExpirationMonth").val();
-		element.expiration.year = $("#cardExpirationYear").val();
+		element.expirationMonth = $("#cardExpirationMonth").val();
+		element.expirationYear = $("#cardExpirationYear").val();
 		element.issuer = $("#cardIssuer").val();
 		element.cvv = $("#cardCvv").val();
 		element.pin = $("#cardPin").val();
@@ -1259,11 +1258,16 @@ function initDevices(devices) {
 
 function createDevice(id, userAgent, type, country, isCurrent) {
 	var tagColor = "btn-outline-primary";
-	var tagIcon = "globe-americas";
-	var tagTranslation = "vault-device-type-web-browser";
+	var tagIcon = "question-circle";
+	var tagTranslation = "vault-device-type-unknown";
 	var currentDeviceClass = "";
 	var currentDeviceCode = "";
-	if(type == "extension") {
+	if(type == "web") {
+		tagColor = "btn-outline-primary";
+		tagIcon = "globe-americas";
+		tagTranslation = "vault-device-type-web-browser";
+	}	
+	if(type == "browserExtension") {
 		tagColor = "btn-outline-primary";
 		tagIcon = "code-square";
 		tagTranslation = "vault-device-type-browser-extension";

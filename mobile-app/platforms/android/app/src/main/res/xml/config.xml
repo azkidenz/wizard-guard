@@ -4,8 +4,8 @@
         <param name="android-package" value="com.phonegap.plugins.nativesettings.NativeSettings" />
     </feature>
     <name>WizardGuard</name>
-    <description>A simple password manager</description>
-    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+    <description>Your identity manager</description>
+    <author email="merlin@wizardguard.org" href="https://wizardguard.org">
         The WizardGuard Team
     </author>
     <content src="index.html" />
@@ -14,6 +14,7 @@
     <allow-intent href="mailto:*" />
     <preference name="loglevel" value="DEBUG" />
     <preference name="hostname" value="wizardguard.org" />
+    <preference name="OverrideUserAgent" value="Cordova Android 1.0.0" />
     <preference name="orientation" value="portrait" />
     <preference name="AndroidWindowSplashScreenAnimatedIcon" value="platforms/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <preference name="AndroidWindowSplashScreenBackground" value="#1B3F91" />

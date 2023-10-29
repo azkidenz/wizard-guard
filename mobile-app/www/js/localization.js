@@ -651,6 +651,10 @@ var translations = {
 		'en': 'Extension',
 		'it': 'Estensione'
 	},
+	'vault-device-type-unknown': {
+		'en': 'Unknown',
+		'it': 'Sconosciuto'
+	},
 	'vault-device-type-web-browser': {
 		'en': 'Web browser',
 		'it': 'Browser web'
