@@ -14,14 +14,14 @@
 	<body class="user-select-none">
 	
 		<div id="loading" class="vh-100 d-flex justify-content-center align-items-center">
-			<div class="spinner-border text-theme" role="status"></div>
+			<img draggable="false" src = "./img/loader.svg" width="60" />
 		</div>
 	
 		<div id="mainContent" class="d-none">
 			<div class="row vh-100 align-items-center mx-0 px-0">
 				<div class="col-12">
 					<div class="text-center mt-4">
-						<p class="h1 mb-4 d-flex justify-content-center"><img src = "./img/logo.svg" width="60" /><span class="ms-3">WizardGuard</span></p>
+						<p class="h1 mb-4 d-flex justify-content-center"><img draggable="false" src = "./img/logo.svg" width="60" /><span class="ms-3">WizardGuard</span></p>
 						<p class="h4 mb-4"><svg class="bi bi-large"><use xlink:href="./img/bootstrap-icons.svg#shield-lock"/></svg><span class="ms-2" data-translate-key="signin-title-access-vault">Accedi alla cassaforte</span></p>
 					</div>
 					<div class="mb-4">
@@ -88,7 +88,7 @@
 		</div>
 			
 		<!-- Reset password modal -->
-		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+		<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -114,7 +114,7 @@
 		</div>
 		
 		<!-- SignUp modal -->
-		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+		<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -170,7 +170,7 @@
 		</div>
 		
 		<!-- Local mode modal -->
-		<div class="modal fade" id="localModeModal" tabindex="-1" aria-labelledby="localModeModalLabel" aria-hidden="true">
+		<div class="modal fade" id="localModeModal" tabindex="-1" aria-labelledby="localModeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -189,8 +189,91 @@
 			</div>
 		</div>
 		
+		<!-- Delete modal -->
+		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="deleteModalLabel" data-translate-key="vault-profile-delete-button">Elimina profilo</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="feedbackModalCloseButton"></button>
+					</div>
+					<div class="modal-body">
+						<p data-translate-key="vault-profile-delete-description-1">Procedendo eliminerai completamente il tuo profilo e tutti i dati salvati.</p>
+						<p class="fw-bold mb-4" data-translate-key="vault-profile-delete-description-3">Attenzione: i tuoi dati saranno persi per sempre.</p>
+						<input type="hidden" id="deleteModalToken" value="" >
+						<div class="form-floating">
+							<input type="email" class="form-control rounded-0 rounded-top border-bottom-0 shadow-none" id="deleteModalEmail" name="deleteModalEmail" placeholder="example@example.com">
+							<label for="deleteModalEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+						</div>
+						<div class="input-group">
+							<div class="form-floating">
+								<input type="password" class="form-control rounded-top-0 border-end-0 shadow-none" id="deletePassword" name="deletePassword" placeholder="**********">
+								<label for="deletePassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="signin-input-password">La tua password</span></label>
+							</div>
+							<span class="input-group-text rounded-top-0 bg-eye border-0 border-top border-bottom border-end" role="button" id="deletePasswordEye"><svg id="eyeDeletePassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-primary no-shadow" data-bs-dismiss="modal" data-translate-key="signin-cancel-button">Annulla</button>
+						<button type="button" class="btn btn-danger no-shadow" id="deleteProfileButton"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#person"/></svg><span class="ms-2" data-translate-key="vault-profile-delete-button">Elimina profilo</span></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Change password modal -->
+		<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="changePasswordModalLabel" data-translate-key="signin-change-password-title">Cambia password</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="feedbackModalCloseButton"></button>
+					</div>
+					<div class="modal-body">
+						<p data-translate-key="signin-change-password-description-1">Come da te richiesto puoi impostare la tua nuova password qui sotto. Se non lo hai richiesto tu, ti consigliamo di sceglierne una più forte.</p>
+						<input type="hidden" id="changePasswordModalToken" value="" >
+						<div class="form-floating mb-3">
+							<input type="email" class="form-control rounded shadow-none" id="changePasswordEmail" name="changePasswordEmail" placeholder="example@example.com">
+							<label for="changePasswordEmail"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#envelope"/></svg><span class="ms-2" data-translate-key="signin-input-email">Il tuo indirizzo email</span></label>
+						</div>
+						<div class="input-group">
+							<div class="form-floating mx-0">
+								<input type="password" class="form-control rounded-0 rounded-top-start shadow-none border border-bottom-0 border-end-0" id="changeOldPassword" name="changeOldPassword" placeholder="**********">
+								<label for="changeOldPassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="vault-profile-current-password">Password attuale</span></label>
+							</div>
+							<span class="input-group-text rounded-0 rounded-top-end bg-eye border-0 border-end border-top" role="button" id="changeOldPasswordEye"><svg id="eyeChangeOldPassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+						<div class="input-group">
+							<div class="form-floating mx-0">
+								<input type="password" class="form-control rounded-0 shadow-none border-bottom-0 border-end-0" id="changePassword" name="changePassword" placeholder="**********">
+								<label for="changePassword"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="vault-profile-new-password">Nuova password</span></label>
+							</div>
+							<span class="input-group-text rounded-0 bg-eye border-0 border-top border-end" role="button" id="changePasswordEye"><svg id="eyeChangePassword" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+						<div id="changePasswordProgressBar" class="progress">
+							<div id="changePasswordStrength" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+						</div>
+						<div class="input-group">
+							<div class="form-floating">
+								<input type="password" class="form-control rounded-top-0 border-end-0 rounded-bottom-start shadow-none" id="changePasswordConfirm" name="changePasswordConfirm" placeholder="**********">
+								<label for="changePasswordConfirm"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#key"/></svg><span class="ms-2" data-translate-key="vault-profile-new-password-confirm">Conferma la nuova password</span></label>
+							</div>
+							<span class="input-group-text rounded-top-0 bg-eye border-0 border-bottom border-end border-top rounded-bottom-end" role="button" id="changePasswordConfirmEye"><svg id="eyeChangePasswordConfirm" class="bi mb-0"><use xlink:href="./img/bootstrap-icons.svg#eye"/></svg></span>
+						</div>
+						<div class="mt-3 small" data-translate-key="signin-feedback-password-complexity-error">
+							La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-primary no-shadow" data-bs-dismiss="modal" data-translate-key="signin-cancel-button">Annulla</button>
+						<button type="button" class="btn btn-primary no-shadow" id="changePasswordButton" data-translate-key="signin-change-password-title">Cambia password</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<!-- Feedback modal -->
-		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+		<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
 				<div class="modal-content">
 					<div class="modal-header">

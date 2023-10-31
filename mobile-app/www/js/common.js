@@ -1,3 +1,97 @@
+/***********************************/
+/* Web worker for background tasks */
+/**********************************/
+
+var cryptoWorker = new Worker("./js/crypto-worker.js");
+
+cryptoWorker.addEventListener("message", function(e) {
+	var args = e.data.args;
+	const callback = args[1];
+	const callbackParameters = args[2];
+	const results = args[3];
+	const parameters = callbackParameters.concat(results);
+	window[callback](...parameters);
+});
+
+function startCryptoWorker(functionName, functionParameters, callback, callbackParameters) {
+	cryptoWorker.postMessage({ "args": [ functionName, functionParameters, callback, callbackParameters ] });
+}
+
+/***************/
+/* Backend API */
+/***************/
+
+function callApi(url, type, data, async, onSuccess, onError) {
+	const backend = "https://api.wizardguard.org/v1/";
+	$.ajax({
+		url: backend + url,
+		type: type,
+		data: data,
+		dataType: "json",
+		cache: false,
+		crossDomain: true,
+		async: async,
+		headers: {
+			"Authorization": "Bearer " + localStorage.getItem("accessToken"),
+			"Accept": "application/json",
+			"Accept-Language": getLocale(),
+			"Access-Control-Allow-Origin": "*"
+		},
+		success: function(result) {
+			if(result.status == "success") {
+				if(result.data && result.data.accessToken) {
+					localStorage.setItem("accessToken", result.data.accessToken);
+				}
+				if(result.data && result.data.refreshToken) {
+					localStorage.setItem("refreshToken", result.data.refreshToken);
+				}
+				onSuccess(result);
+			}
+			else {
+				verifyAccessToken(url, type, data, async, onSuccess, onError, result);
+			}
+		},
+		error: function(result) {
+			verifyAccessToken(url, type, data, async, onSuccess, onError, result);
+		}
+	});
+}
+
+function verifyAccessToken(url, type, data, async, onSuccess, onError, result) {
+	if(result.status == 401 && result.responseJSON && result.responseJSON && result.responseJSON.message == "unauthorized" && localStorage.getItem("accessToken") != undefined) {
+		localStorage.removeItem("accessToken");
+		getAccessToken(url, type, data, async, onSuccess, onError);
+	}
+	else {
+		onError(result);
+	}
+}
+
+function getAccessToken(url, type, data, async, onSuccess, onError) {
+	let refreshData = {
+		refreshToken: localStorage.getItem("refreshToken")
+	};
+	callApi("auth/refreshTokens", "POST", refreshData, true,
+		function(result){
+			callApi(url, type, data, async, onSuccess, onError);
+		},
+		function(result) {
+			signout("expired");
+		}
+	);
+}
+
+function showBackendError(result) {
+	var details = translateString("feedback-generic-error");
+	if(result && result.responseJSON && result.responseJSON.status == "error") {
+		details = result.responseJSON.message;
+	}
+	else if(result && result.responseJSON && result.responseJSON.status == "fail") {
+		details = translateString("feedback-fail-error");
+	}
+	showFeedback(translateString("feedback-title-error"), details);
+}
+
 /*****************************/
 /* Utility: show/hide loader */
 /*****************************/
@@ -171,27 +265,61 @@ $(document).ready(function() {
 	$("#profilePassword").on("input", function() {
 		setPasswordStrength(false, "#profilePassword", "#profilePasswordStrength");
 	});
+	$("#changePassword").on("input", function() {
+		setPasswordStrength(false, "#changePassword", "#changePasswordStrength");
+	});
 });
 
 /**********/
 /* Logout */
 /**********/
 
+function signout(action) {
+	showLoader(true);
+	if(action == "expired") {
+		clearData();
+		window.location.replace("./signin.html?a=expired");
+	}
+	else {
+		callApi("user/signout", "POST", "", true,
+			function(result){
+				checkAction(action);
+			},
+			function(result) {
+				checkAction(action);
+			}
+		);
+	}
+}
+
+function checkAction(action) {
+	clearData();
+	if(action == "delete") {
+		window.location.replace("./signin.html?a=delete");
+	}
+	else if(action == "password") {
+		window.location.replace("./signin.html?a=password");
+	}
+	else {
+		window.location.replace("./signin.html");
+	}
+}
+
+function clearData() {
+	const language = localStorage.getItem("locale");
+	const theme = localStorage.getItem("theme");
+	localStorage.clear();
+	sessionStorage.clear();
+	localStorage.setItem("locale", language);
+	localStorage.setItem("theme", theme);
+	localStorage.setItem("firstAccess", "false");
+}
+
 $(document).ready(function() {
 	if(localStorage.getItem("loginType") == "local") {
 		$("#localLogout").removeClass("d-none");
 	}
 	$("#logoutButton").click(function(){
-		showLoader(true);
-		const language = localStorage.getItem("locale");
-		const theme = localStorage.getItem("theme");
-		localStorage.clear();
-		sessionStorage.clear();
-		localStorage.setItem("locale", language);
-		localStorage.setItem("theme", theme);
-		localStorage.setItem("firstAccess", "false");
-		/* TODO */
-		// Chiamata AJAX al Server
-		window.location.replace("./signin.html");
+		signout();
 	});
 });

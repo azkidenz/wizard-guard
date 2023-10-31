@@ -7,6 +7,26 @@ var translations = {
 		'en': 'Error',
 		'it': 'Errore'
 	},
+	'feedback-generic-error': {
+		'en': 'Unable to contact the server. Please check your connection or try again later.',
+		'it': 'Impossibile contattare il server. Verifica la tua connessione o riprova più tardi.'
+	},
+	'feedback-fail-error': {
+		'en': 'The fields entered are incorrect.',
+		'it': 'I campi inseriti non sono corretti.'
+	},
+	'signin-session-expired': {
+		'en': 'Your session has expired. You need to log in again.',
+		'it': 'La tua sessione è scaduta. Devi effettuare nuovamente l\'accesso.'
+	},
+	'signin-password-reset': {
+		'en': 'You will receive an email with instructions on how to complete the reset of your password.',
+		'it': 'Riceverai un\'email con le istruzioni per completare il reset della tua password.'
+	},
+	'signin-password-changed': {
+		'en': 'The password reset procedure was successfully completed.',
+		'it': 'La procedura di reset della password è stata completata con successo.'
+	},
 	'signin-title': {
 		'en': 'WizardGuard | SignIn',
 		'it': 'WizardGuard | Accedi'
@@ -62,6 +82,10 @@ var translations = {
 	'signin-signup-action': {
 		'en': 'Sign Up',
 		'it': 'Registrati'
+	},
+	'signin-signup-activation': {
+		'en': 'Your account has been successfully activated. You can now sign in.',
+		'it': 'Il tuo account è stato attivato con successo. Ora puoi effettuare l\'accesso.'
 	},
 	'signin-language': {
 		'en': 'Language:',
@@ -163,10 +187,6 @@ var translations = {
 		'en': 'The password must be longer than 8 characters and must contain at least one lowercase letter, one uppercase letter, one number and one special character.',
 		'it': 'La password deve essere più lunga di 8 caratteri e deve contenere almeno una lettera minuscola, una lettera maiuscola, un numero e un carattere speciale.'
 	},
-	'signin-feedback-credentials-error': {
-		'en': 'The credentials entered are incorrect.',
-		'it': 'Le credenziali inserite non sono corrette.'
-	},
 	'signin-feedback-first-name-error': {
 		'en': 'You must enter a first name.',
 		'it': 'Devi inserire un nome.'
@@ -186,6 +206,26 @@ var translations = {
 	'signin-feedback-password-match-error': {
 		'en': 'Passwords do not match.',
 		'it': 'Le password non corrispondono.'
+	},
+	'signin-feedback-key-creation': {
+		'en': 'Creation of encryption keys in progress.',
+		'it': 'Creazione delle chiavi di cifratura in corso.'
+	},
+	'signin-feedback-key-decryption': {
+		'en': 'Local decryption of synchronized items in progress.',
+		'it': 'Decifratura locale degli elementi sincronizzati in corso.'
+	},
+	'signin-profile-deleted': {
+		'en': 'Your profile has been deleted completely.',
+		'it': 'Il tuo profilo è stato eliminato completamente.'
+	},
+	'signin-change-password-title': {
+		'en': 'Change password',
+		'it': 'Cambia password'
+	},
+	'signin-change-password-description-1': {
+		'en': 'As you requested you can set your new password below. If you did not request it, we recommend that you choose a stronger one.',
+		'it': 'Come da te richiesto puoi impostare la tua nuova password qui sotto. Se non lo hai richiesto tu, ti consigliamo di sceglierne una più forte.'
 	},
 	'unlock-title': {
 		'en': 'WizardGuard | Unlock',
@@ -236,24 +276,32 @@ var translations = {
 		'it': 'Generatore'
 	},
 	'vault-menu-devices': {
-		'en': 'Devices',
-		'it': 'Dispositivi'
+		'en': 'Sessions',
+		'it': 'Sessioni'
 	},
 	'vault-devices-device': {
-		'en': 'Device',
-		'it': 'Dispositivo'
+		'en': 'Session',
+		'it': 'Sessione'
 	},
 	'vault-menu-close': {
 		'en': 'Close',
 		'it': 'Chiudi'
 	},
 	'vault-welcome': {
-		'en': 'Welcome',
-		'it': 'Benvenuto'
+		'en': 'Hello',
+		'it': 'Ciao'
 	},
 	'vault-user-edit': {
 		'en': 'Edit profile',
 		'it': 'Modifica profilo'
+	},
+	'vault-user-edit-connection-error': {
+		'en': 'Unable to retrieve profile data. Check your internet connection.',
+		'it': 'Impossibile recuperare i dati del profilo. Verifica la tua connessione a internet.'
+	},
+	'vault-user-edit-success': {
+		'en': 'Your profile has been updated correctly.',
+		'it': 'Il tuo profilo è stato aggiornato correttamente.'
 	},
 	'vault-user-lock': {
 		'en': 'Lock vault',
@@ -262,6 +310,10 @@ var translations = {
 	'vault-user-theme-edit': {
 		'en': 'Light/Dark theme',
 		'it': 'Tema chiaro/scuro'
+	},
+	'vault-user-force-resync': {
+		'en': 'Force resync',
+		'it': 'Forza sincronizzazione'
 	},
 	'vault-sidebar-filter': {
 		'en': 'Filter the vault',
@@ -468,20 +520,32 @@ var translations = {
 		'it': 'Sei sicuro di voler eliminare TUTTI gli elementi selezionati? Questa azione non è reversibile e questi dati saranno persi per sempre.'
 	},
 	'vault-devices-title': {
-		'en': 'Your devices',
-		'it': 'I tuoi dispositivi'
+		'en': 'Your sessions',
+		'it': 'Le tue sessioni'
 	},
 	'vault-devices-description': {
-		'en': 'This is a list of all the devices you are logged into. If you have stopped using one or if you detect unauthorized access take steps to disconnect it immediately.',
-		'it': 'Questo è l\'elenco di tutti i dispositivi in cui hai effettuato l\'accesso. Se hai smesso di utilizzarne uno o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.'
+		'en': 'This is a list of all the sessions you are logged into. If you have stopped using a device or if you detect unauthorized access take steps to disconnect it immediately.',
+		'it': 'Questo è l\'elenco di tutte le sessioni in cui hai effettuato l\'accesso. Se hai smesso di utilizzare un dispositivo o se rilevi un accesso non autorizzato provvedi a scollegarlo subito.'
+	},
+	'vault-devices-current': {
+		'en': 'This session',
+		'it': 'Questa sessione'
+	},
+	'vault-devices-empty': {
+		'en': 'To view other active sessions verify that you are logged into your WizardGuard account and that the connection is active.',
+		'it': 'Per visualizzare le altre sessioni attive verifica di avere effettuato l\'accesso al tuo account WizardGuard e che la connessione sia attiva.'
 	},
 	'vault-delete-device-title': {
-		'en': 'Delete device',
-		'it': 'Elimina dispositivo'
+		'en': 'Delete session',
+		'it': 'Elimina sessione'
 	},
-	'vault-delete-device-description': {
-		'en': 'Are you sure you want to delete this device? You will need to log in again.',
-		'it': 'Sei sicuro di voler eliminare questo dispositivo? Dovrai effettuare nuovamente l\'accesso.'
+	'vault-delete-device-description-1': {
+		'en': 'Are you sure you want to delete this session? You will have to log in again on the device once disconnected.',
+		'it': 'Sei sicuro di voler eliminare questa sessione? Dovrai effettuare nuovamente l\'accesso sul dispositivo una volta scollegato.'
+	},
+	'vault-delete-device-description-2': {
+		'en': 'You are about to delete your current session. You will also be logged out of this device.',
+		'it': 'Stai per eliminare la tua sessione attuale. Verrai disconesso anche da questo dispositivo.'
 	},
 	'vault-generator-title': {
 		'en': 'Password generator',
@@ -540,8 +604,16 @@ var translations = {
 		'it': 'Modifica i tuoi dati anagrafici.'
 	},
 	'vault-profile-description-2': {
-		'en': 'Changing your login information will automatically disconnect all sessions.',
-		'it': 'Modificando i tuoi dati di accesso tutte le sessioni verranno automaticamente disconnesse.'
+		'en': 'Read-only email address. If you wish to change it please contact support.',
+		'it': 'Indirizzo email in sola lettura. Se desideri modificarlo contatta il supporto.'
+	},
+	'vault-profile-description-3': {
+		'en': 'Request password change',
+		'it': 'Richiedi cambio password'
+	},
+	'vault-profile-description-4': {
+		'en': 'Enter your current password and press "Confirm" to receive password change instructions to your email address.',
+		'it': 'Inserisci la password attuale e premi su "Conferma" per ricevere le istruzioni di cambio password al tuo indirizzo email.'
 	},
 	'vault-profile-current-password': {
 		'en': 'Current password',
@@ -579,6 +651,10 @@ var translations = {
 		'en': 'Extension',
 		'it': 'Estensione'
 	},
+	'vault-device-type-unknown': {
+		'en': 'Unknown',
+		'it': 'Sconosciuto'
+	},
 	'vault-device-type-web-browser': {
 		'en': 'Web browser',
 		'it': 'Browser web'
@@ -608,6 +684,10 @@ var translations = {
 		'it': 'Procedendo eliminerai completamente il tuo profilo e tutti i dati salvati.'
 	},
 	'vault-profile-delete-description-2': {
+		'en': 'You will receive an email with instructions for completing the deletion at the email address associated with your account.',
+		'it': 'Riceverai un\'email con le istruzioni per completare l\'eliminazione all\'indirizzo di posta associato al tuo account.'
+	},
+	'vault-profile-delete-description-3': {
 		'en': 'Warning: your data will be lost forever.',
 		'it': 'Attenzione: i tuoi dati saranno persi per sempre.'
 	},
@@ -637,7 +717,11 @@ var translations = {
 	},
 };
 
-const defaultLanguage = "it";
+const defaultLanguage = "en";
+
+function getLocale() {
+	return localStorage.getItem("locale") == undefined ? defaultLanguage : localStorage.getItem("locale");
+}
 
 function translateString(translationKey) {
 	const language = localStorage.getItem("locale") == undefined ? defaultLanguage : localStorage.getItem("locale");
@@ -673,4 +757,18 @@ function setLanguage(language) {
 	$(".dropdown-language").removeClass("active");
 	$("#language-"+language).addClass("active");
 	$("html").attr("lang", language);
+}
+
+/****************/
+/* Set language */
+/****************/
+
+if(localStorage.getItem("locale") == undefined) {
+	var userLang = navigator.language || navigator.userLanguage;
+	if(userLang) {
+		var userLangArray = userLang.split("-");
+		if(userLangArray[0]) {
+			setLanguage(userLangArray[0]);
+		}
+	}
 }

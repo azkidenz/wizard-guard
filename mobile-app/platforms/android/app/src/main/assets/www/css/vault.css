@@ -34,6 +34,13 @@
 	height: 24px;
 }
 
+#profileLoading, #devicesTableLoading {
+	display: table;
+	position: relative;
+	margin: 0 auto;
+	top: calc(50% - 24px);
+}
+
 [data-bs-theme=light] .bg-lateral-bar {
 	background-color: #F3F6FC;
 }
@@ -77,6 +84,10 @@
 	background-color: #cccccc;
 	border-color: transparent;
 	border-radius: 1rem;
+}
+
+#dropdownUserMenu {
+    transform: translate3d(0px, 30.4px, 0px) !important;
 }
 
 /*********************/

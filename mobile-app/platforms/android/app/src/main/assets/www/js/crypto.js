@@ -6901,7 +6901,7 @@ function HKDF(masterKey, salt, info, keyLengthInBytes) {
 	return extendedKey;
 }
 
-global.generateProtectedSimmetricKey = function(masterPassword, email) {
+global.generateProtectedSimmetricKey = function(masterPassword, email, currentSymmetricKey = undefined) {
 	
 	const masterKey = generateMasterKey(masterPassword, email);
 	const stretchedMasterKey = generateStretchedMasterKey(masterKey, email);
@@ -6911,7 +6911,13 @@ global.generateProtectedSimmetricKey = function(masterPassword, email) {
 	Cryptographically Secure Pseudorandom Number Generator (CSPRNG).
 	*/
 
-	const symmetricKey = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Hex);
+	var symmetricKey;
+	if(currentSymmetricKey == undefined) {
+		symmetricKey = CryptoJS.lib.WordArray.random(64).toString(CryptoJS.enc.Hex);
+	}
+	else {
+		symmetricKey = currentSymmetricKey;
+	}
 	const initializationVector = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
 
 	/*

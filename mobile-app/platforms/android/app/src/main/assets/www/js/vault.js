@@ -55,12 +55,15 @@ $('#profileModal').on('shown.bs.modal', function (e) {
 $(document).ready(function() {
 	if(localStorage.getItem("loginType") == "local") {
 		$("#editProfileMenu").addClass("d-none");
+		$("#forceResync").addClass("d-none");
 		$("#localLogout").removeClass("d-none");
 		$("#profileNameNavbar").text("Wizard");
 	}
 	else {
 		const firstName = localStorage.getItem("firstName");
 		$("#profileNameNavbar").text(firstName);
+		$("#showDevicesModal").removeClass("d-none");
+		$("#showDevicesModalMobile").removeClass("d-none");
 	}
 });
 
@@ -92,8 +95,6 @@ $('.modal').on('hidden.bs.modal', function (e) {
 	clickEye("#passwordPassword", "#eyePassword", true);
 	clickEye("#cardPin", "#eyePin", true);
 	clickEye("#profileOldPassword", "#eyeProfileOldPassword", true);
-	clickEye("#profilePassword", "#eyeProfilePassword", true);
-	clickEye("#profilePasswordConfirm", "#eyeProfilePasswordConfirm", true);
 	itemsCounter = 1;
 	websiteCounter = 1;
 	readOnlyMode = false;
@@ -329,7 +330,7 @@ document.getElementById('copyPassword').addEventListener('click', function (even
 	showFeedback(translateString("feedback-title-success"), translateString("vault-feedback-password-clipboard"));
 	var historyId = 0;
 	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("history-")) {
+		if(localStorage.key(i).startsWith("history-")) {
 			var tmpId = parseInt(localStorage.key(i).split("-")[1]);
 			if(tmpId > historyId) {
 				historyId = tmpId;
@@ -350,7 +351,7 @@ document.getElementById('copyPassword').addEventListener('click', function (even
 function loadHistory() {
 	passwordHistory = [];
 	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("history-")) {
+		if(localStorage.key(i).startsWith("history-")) {
 			var element = [localStorage.key(i), secureLocalStorageGetItem(localStorage.key(i))];
 			passwordHistory.push(element);
 		}
@@ -364,7 +365,7 @@ function loadHistory() {
 function clearHistory() {
 	var marked = [];
 	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("history-")) {
+		if(localStorage.key(i).startsWith("history-")) {
 			marked.push(localStorage.key(i));
 		}
 	}
@@ -507,14 +508,25 @@ $(document).ready(function () {
 /*************************/
 
 function setMainTable() {
-	syncVault();
+	var isEmptyTable = true;
+	
+	if(localStorage.getItem("loginType") != "local") {
+		initVault();
+	}
+	
 	$('#newElementButton').prop('disabled', false);
 	const credentialsTableBody = $("#mainTableBody");
 	for(var i=0; i<localStorage.length; i++) {
-		if(localStorage.key(i).includes("element-")) {
-			const element = JSON.parse(secureLocalStorageGetItem(localStorage.key(i)));
+		if(localStorage.key(i).startsWith("element-")) {
+			const content = secureLocalStorageGetItem(localStorage.key(i));
+			if(content == "") {
+				continue;
+			}
+			isEmptyTable = false;
+			const element = JSON.parse(content);
 			const title = element.title;
-			const id = element.id;;
+			var id = localStorage.key(i);
+			id = id.replace("element-", "");
 			var description = element.username;
 			if(element.type == "cards") {
 				description = formatCardValue(element.number);
@@ -529,9 +541,11 @@ function setMainTable() {
 			}).then();
 		}
 	}
+	if(isEmptyTable) {
+		$("#noElements").removeClass("d-none");
+	}
 	initHistory();
 	initDeleteButton();
-	initDevices();
 	initCheckboxes();
 }
 
@@ -575,43 +589,148 @@ function createRow(id, title, description, type) {
 	return row;
 }
 
-function syncVault() {
-	var currentLocalStorage = [];
-	var remoteStorage = [];
-	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("element-")) {
-			currentLocalStorage.push(localStorage.key(i));
+function initVault() {
+	
+	var remoteElements = [];
+	var remoteElementsTimestamp = [];
+	var remoteElementsValues = [];
+
+	callApi("vault", "GET", "", false,
+		function(result){
+			for(var i=0; i<result.data.vault.length; i++) {
+				remoteElements.push(result.data.vault[i].id);
+				remoteElementsTimestamp.push(result.data.vault[i].updatedAt);
+				remoteElementsValues.push(result.data.vault[i].value);
+			}
+			syncVault(remoteElements, remoteElementsTimestamp, remoteElementsValues);
+		},
+		function(result) {
+			syncVault(remoteElements, remoteElementsTimestamp, remoteElementsValues);
+		}
+	);
+}
+
+function syncVault(remoteElements, remoteElementsTimestamp, remoteElementsValues) {
+	var localElements = [];
+	var createElements = [];
+	var editElements = [];
+	var deleteElements = [];
+	
+	// Load local elements
+	for (var i=0; i<localStorage.length; i++){
+		if(localStorage.key(i).startsWith("element-")) {
+			var key = localStorage.key(i);
+			key = key.replace("element-", "");
+			localElements.push(key);
 		}
 	}
-	
-	const elements = loadElements();
-	if(elements != "" && elements != undefined) {
-		const userElementsData = JSON.parse(elements);
-		for(var i=0; i<userElementsData.length; i++) {
-			var type = userElementsData[i].type;
-			var id = userElementsData[i].id;
-			var content = JSON.stringify(userElementsData[i]);
-			remoteStorage.push(id);
-			var localElement = secureLocalStorageGetItem(id);
-			if(!localElement || (localElement && localElement.timestamp < content.timestamp)) {
-				secureLocalStorageSetItem(id, content);
+	// Check remote elements
+	for(var i=0; i<remoteElements.length; i++) {
+		if(localElements.includes(remoteElements[i])) {
+			var localTimestamp = localStorage.getItem("timestamp-element-"+remoteElements[i]);
+			if(!localTimestamp || (localTimestamp < remoteElementsTimestamp[i])) {
+				localStorage.setItem("element-"+remoteElements[i], remoteElementsValues[i]);
+				localStorage.setItem("timestamp-element-"+remoteElements[i], remoteElementsTimestamp[i]);
+			}
+			else if(localTimestamp && localTimestamp != remoteElementsTimestamp[i]){
+				if(localStorage.getItem("element-"+remoteElements[i]) == "") {
+					deleteElements.push(localElements[i]);
+				}
+				else {
+					editElements.push(remoteElements[i]);
+				}
+			}
+		}
+		else {
+			localStorage.setItem("element-"+remoteElements[i], remoteElementsValues[i]);
+			localStorage.setItem("timestamp-element-"+remoteElements[i], remoteElementsTimestamp[i]);
+		}
+	}
+	// Check local elements
+	for(var i=0; i<localElements.length; i++) {
+		if(!remoteElements.includes(localElements[i])) {
+			if(!localElements[i].startsWith("local-")) {
+				localStorage.removeItem("element-"+localElements[i]);
+			}
+			else {
+				var value = localStorage.getItem("element-"+localElements[i]);
+				if(value == "") {
+					deleteElements.push(localElements[i]);
+				}
+				else {
+					createElements.push(localElements[i]);
+				}
 			}
 		}
 	}
-	else {
-		$("#noElements").removeClass("d-none");
-	}
 	
-	for(var i=0; i<currentLocalStorage.length; i++) {
-		if(!remoteStorage.includes(currentLocalStorage[i])) {
-			localStorage.removeItem(currentLocalStorage[i]);
-		}
-	}
+	createElements = removeDuplicates(createElements);
+	editElements = removeDuplicates(editElements);
+	deleteElements = removeDuplicates(deleteElements);
+	
+	createElementsInVault(createElements);
+	updateElementsInVault(editElements);
+	deleteElementsFromVault(deleteElements);
 }
 
-function loadElements() {
-	//return "";
-	return '[{"id":"element-1234-5678","timestamp":1695552569,"type":"login","title":"Amazon","username":"example@example.com","password":"la_tua_password_segreta","secret2fa":"JBSWY3DPEHPK3PXP","websites":["https://www.amazon.it","https://www.amazon.de"],"note":"Questo è il tuo account Amazon Italia.","customFields":[{"label":"Numero di telefono","value":"+39 XXX XXXXXXX","type":"text"},{"label":"Indirizzo di spedizione","value":"Via Nome della Via, Numero Civico, CAP Città, Provincia","type":"text"}]},{"id":"element-2","timestamp":1695552569,"type":"login","title":"Skype","username":"example@example.com","password":"la_tua_password_segreta","secret2fa":"il_tuo_codice_2fa","websites":["https://www.skype.com"],"note":"Questo è il tuo account Amazon Italia.","customFields":[{"label":"Numero di telefono","value":"+39 XXX XXXXXXX","type":"text"},{"label":"Indirizzo di spedizione","value":"Via Nome della Via, Numero Civico, CAP Città, Provincia","type":"text"}]},{"id":"element-3","timestamp":1695552569,"type":"cards","title":"Banca Popolare di Sondrio","holder":"Nome Cognome","number":"5355746374848759","expiration":{"month":12,"year":2025},"issuer":"visa","cvv":123,"pin":9876,"note":"Questa è la mia carta di credito.","customFields":[{"label":"Limite di spesa","value":"€5000","type":"text"}]},{"id":"element-4","timestamp":1695552569,"type":"note","title":"Lista della spesa","note":"Queste sono alcune note private.","customFields":[{"label":"Importante","value":"Da non condividere con nessuno.","type":"text"},{"label":"Cifratura","value":"3478573485","type":"hidden"}]}]';
+function removeDuplicates(arr) { 
+	return [...new Set(arr)]; 
+}
+
+function updateElementsInVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
+	var elements = [];
+	for(var i=0; i<ids.length; i++) {
+		var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
+		var value = localStorage.getItem("element-"+ids[i]);
+		let element = {
+			id: ids[i],
+			value: value,
+			updatedAt: timestamp
+		};
+		elements.push(element);
+	}
+	let data = {
+		vault: elements
+	};
+	callApi("vault", "PUT", data, true,
+		function(result){},
+		function(result){}
+	);
+}
+
+function createElementsInVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
+	var elements = [];
+	for(var i=0; i<ids.length; i++) {
+		var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
+		var value = localStorage.getItem("element-"+ids[i]);
+		let element = {
+			value: value,
+			updatedAt: timestamp
+		};
+		elements.push(element);	
+	}
+	let data = {
+		vault: elements
+	};
+	callApi("vault", "POST", data, true,
+		function(result){
+			for(var i=0; i<ids.length; i++) {
+				var timestamp = localStorage.getItem("timestamp-element-"+ids[i]);
+				var value = localStorage.getItem("element-"+ids[i]);
+				localStorage.setItem("timestamp-element-"+result.data[i], timestamp);
+				localStorage.setItem("element-"+result.data[i], value);
+				localStorage.removeItem("timestamp-element-"+ids[i]);
+				localStorage.removeItem("element-"+ids[i]);
+			}
+		},
+		function(result){}
+	);
 }
 
 /*************************************/
@@ -621,36 +740,33 @@ function loadElements() {
 function setFavicon(id) {
 	const faviconId = "#favicon-"+id;
 	$(faviconId).empty();
-	
-	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("element-")) {
-			const element = JSON.parse(secureLocalStorageGetItem(localStorage.key(i)));
-			if(element.id == id) {
-				if(element.type == "cards") {
-					if(element.issuer == "visa") {
-						appendLogo(faviconId, './img/visa.svg');
-					}
-					else if(element.issuer == "mastercard") {
-						appendLogo(faviconId, './img/mastercard.svg');
-					}
-					else if(element.issuer == "amex") {
-						appendLogo(faviconId, './img/amex.svg');
-					}
+	const element = JSON.parse(secureLocalStorageGetItem("element-"+id));
+	if(element.type == "cards") {
+		if(element.issuer == "visa") {
+			appendLogo(faviconId, './img/visa.svg');
+		}
+		else if(element.issuer == "mastercard") {
+			appendLogo(faviconId, './img/mastercard.svg');
+		}
+		else if(element.issuer == "amex") {
+			appendLogo(faviconId, './img/amex.svg');
+		}
+	}
+	else if(element.websites && element.websites.length > 0) {
+		for(var c=0; c<element.websites.length; c++) {
+			try {
+				var url = element.websites[c];
+				var parsedURL = new URL(url);
+				var hostname = parsedURL.hostname;
+				if(localStorage.getItem("loginType") == "local") {
+					appendLogo(faviconId, './img/world.svg');
 				}
-				else if(element.websites && element.websites.length > 0) {
-					for(var c=0; c<element.websites.length; c++) {
-						try {
-							var url = element.websites[c];
-							var parsedURL = new URL(url);
-							var hostname = parsedURL.hostname;
-							appendLogo(faviconId, 'https://icons.duckduckgo.com/ip3/'+hostname+'.ico');
-							break;
-						}
-						catch(e) {}
-					}
-					break;
+				else {
+					appendLogo(faviconId, 'https://icons.duckduckgo.com/ip3/'+hostname+'.ico');
 				}
+				break;
 			}
+			catch(e) {}
 		}
 	}
 }
@@ -658,6 +774,7 @@ function setFavicon(id) {
 function appendLogo(id, url) {
 	var img = $("<img>");
 	img.attr("src", url);
+	img.attr("draggable", false);
 	img.attr("onerror", "this.style.display='none'");
 	img.addClass("element-icon me-3");
 	$(id).append(img);
@@ -679,19 +796,8 @@ function showElement(id, readOnly) {
 		$("#editCardButton").addClass("d-none");
 		$("#editNoteButton").addClass("d-none");
 	}
-	var type;
-	var element;
-	
-	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("element-")) {
-			var tmpElement = JSON.parse(secureLocalStorageGetItem(localStorage.key(i)));
-			if(tmpElement.id == id) {
-				type = tmpElement.type;
-				element = tmpElement;
-			}
-		}
-	}
-	
+	var element = JSON.parse(secureLocalStorageGetItem("element-"+id));
+	var type = element.type;
 	if(type == "login") {
 		var totp = element.secret2fa;
 		if(readOnlyMode) {
@@ -723,22 +829,22 @@ function showElement(id, readOnly) {
 		websiteCounter = i;
 		const addItemButton = document.getElementById("addItemButton-addPasswordModal");
 		setCustomFields(element, addItemButton);
-		$("#editPasswordId").val(element.id);
+		$("#editPasswordId").val(id);
 		$("#addPasswordModal").modal("show");
 	}
 	else if(type == "cards") {
 		$("#title-addCardModal").val(element.title);
 		$("#cardHolder").val(element.holder);
 		$("#cardNumber").val(formatCardValue(element.number));
-		$("#cardExpirationMonth").val(element.expiration.month);
-		$("#cardExpirationYear").val(element.expiration.year);
+		$("#cardExpirationMonth").val(element.expirationMonth);
+		$("#cardExpirationYear").val(element.expirationYear);
 		$("#cardIssuer").val(element.issuer);
 		$("#cardCvv").val(element.cvv);
 		$("#cardPin").val(element.pin);
 		$("#cardNote").val(element.note);
 		const addItemButton = document.getElementById("addItemButton-addCardModal");
 		setCustomFields(element, addItemButton);
-		$("#editCardId").val(element.id);
+		$("#editCardId").val(id);
 		$("#addCardModal").modal("toggle");
 	}
 	else if(type == "note") {
@@ -746,7 +852,7 @@ function showElement(id, readOnly) {
 		$("#noteNote").val(element.note);
 		const addItemButton = document.getElementById("addItemButton-addNoteModal");
 		setCustomFields(element, addItemButton);
-		$("#editNoteId").val(element.id);
+		$("#editNoteId").val(id);
 		$("#addNoteModal").modal("toggle");
 	}
 }
@@ -794,35 +900,80 @@ function initDeleteButton() {
 		selectedCheckboxes.each(function() {
 			var checkbox = $(this);
 			var checkboxId = checkbox.attr("id");
-			localStorage.removeItem(checkboxId.replace("check-", ""));
-			elementIds.push(checkboxId.replace("check-", ""));
+			var id = checkboxId.replace("check-", "");
+			if(id.startsWith("local-")) {
+				localStorage.removeItem("element-"+id);
+				localStorage.removeItem("timestamp-element-"+id);
+			}
+			else {
+				localStorage.setItem("element-"+id, "");
+				localStorage.setItem("timestamp-element-"+id, Date.now());
+			}
+			elementIds.push(id);
 			var row = checkbox.closest("tr");
 			row.remove();
-			localStorage.removeItem(elementIds);
 		});
 		$("#deleteButton").prop('disabled', true);
 		if($('#mainTable tr').length == 0 || $("#mainTable tr.d-none").length == $('#mainTable tr').length) {
 			$("#noElements").removeClass("d-none");
 		}
-		deleteElements(elementIds);
+		if(localStorage.getItem("loginType") != "local") {
+			deleteElementsFromVault(elementIds);
+		}
 	});
 }
 
 function deleteElement(id) {
 	$('#'+id).remove();
-	localStorage.removeItem(id);
+	if(id.startsWith("local-")) {
+		localStorage.removeItem("element-"+id);
+		localStorage.removeItem("timestamp-element-"+id);
+	}
+	else {
+		localStorage.setItem("element-"+id, "");
+		localStorage.setItem("timestamp-element-"+id, Date.now());
+	}
 	$("#deleteButton").prop('disabled', true);
 	if($('#mainTable tr').length == 0 || $("#mainTable tr.d-none").length == $('#mainTable tr').length) {
 		$("#noElements").removeClass("d-none");
 	}
 	var elementIds = [];
 	elementIds.push(id);
-	deleteElements(elementIds);
+	if(localStorage.getItem("loginType") != "local") {
+		deleteElementsFromVault(elementIds);
+	}
 }
 
-function deleteElements(ids) {
-	/* TODO */
-	// Chiamata AJAX al Server
+function deleteElementsFromVault(ids) {
+	if(ids.length == 0) {
+		return;
+	}
+	if(ids.length == 1) { 
+		let data = {
+			id: ids[0]
+		};
+		callApi("vault/one", "DELETE", data, true,
+			function(result){
+				localStorage.removeItem("element-"+data.id);
+				localStorage.removeItem("timestamp-element-"+data.id);
+			},
+			function(result){}
+		);
+	}
+	else {
+		let data = {
+			vault: ids
+		};
+		callApi("vault", "DELETE", data, true,
+			function(result){
+				for(var i=0; i<ids.length; i++) {
+					localStorage.removeItem("element-"+ids[i]);
+					localStorage.removeItem("timestamp-element-"+ids[i]);
+				}
+			},
+			function(result){}
+		);
+	}
 }
 
 /******************/
@@ -878,18 +1029,20 @@ function saveElement(id, modalId) {
 		return;
 	}
 	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("element-")) {
-			var tmpElement = JSON.parse(secureLocalStorageGetItem(localStorage.key(i)));
-			if(tmpElement.id == id) {
+		if(localStorage.key(i).startsWith("element-")) {
+			const content = secureLocalStorageGetItem(localStorage.key(i));
+			if(content == "") {
+				continue;
+			}
+			if(localStorage.key(i) == "element-"+id) {
 				elementFound = true;
-				element = tmpElement;
+				element = JSON.parse(content);
 				break;
 			}
 		}
 	}
 	if(!elementFound) {
-		id = "element-"+uuid();
-		element.id = id;
+		id = "local-"+uuid();
 		var type;
 		if(modalId == "addPasswordModal") {
 			type = "login";
@@ -899,7 +1052,6 @@ function saveElement(id, modalId) {
 		else if(modalId == "addCardModal") {
 			type = "cards";
 			element.type = "cards";
-			element.expiration = [];
 		}
 		else if(modalId == "addNoteModal") {
 			element.type = "note";
@@ -907,7 +1059,7 @@ function saveElement(id, modalId) {
 		}
 	}
 	var description;
-	element.timestamp = Date.now();
+	localStorage.setItem("timestamp-element-"+id, Date.now());
 	if(element.type == "login") {
 		element.title = $("#title-addPasswordModal").val();
 		element.username = $("#passwordUsername").val();
@@ -931,8 +1083,8 @@ function saveElement(id, modalId) {
 		element.title = $("#title-addCardModal").val();
 		element.holder = $("#cardHolder").val();
 		element.number = $("#cardNumber").val().replace(/\s/g, '');
-		element.expiration.month = $("#cardExpirationMonth").val();
-		element.expiration.year = $("#cardExpirationYear").val();
+		element.expirationMonth = $("#cardExpirationMonth").val();
+		element.expirationYear = $("#cardExpirationYear").val();
 		element.issuer = $("#cardIssuer").val();
 		element.cvv = $("#cardCvv").val();
 		element.pin = $("#cardPin").val();
@@ -963,7 +1115,6 @@ function saveElement(id, modalId) {
 			customFields.push({label:fieldLabel, value:fieldValue, type:fieldType});
 		}
 	});
-	console.log(customFields);
 	element.customFields = customFields;
 	$("#table-title-"+id).text(element.title);
 	if(description == "" || description == undefined) {
@@ -973,35 +1124,150 @@ function saveElement(id, modalId) {
 		$("#mainTableBody").append(createRow(id, element.title, description, type));
 		$("#noElements").addClass("d-none");
 	}
-	secureLocalStorageSetItem(element.id, JSON.stringify({...element}));
+	secureLocalStorageSetItem("element-"+id, JSON.stringify({...element}));
 	$("#table-description-"+id).text(description);
 	$("#"+modalId).modal("hide");
 	setFavicon(id);
 	setDeleteButton();
 	initCheckboxes();
+	if(localStorage.getItem("loginType") != "local") {
+		if(id.includes("local-")) {
+			vaultCreateElement(id);
+		}
+		else {
+			vaultUpdateElement(id);
+		}
+	}
+}
+
+/*************************/
+/* Vault: create element */
+/*************************/
+
+function vaultCreateElement(id) {
+	let data = {
+		value: localStorage.getItem("element-"+id),
+		updatedAt: localStorage.getItem("timestamp-element-"+id)
+	};
+	callApi("vault/one", "POST", data, true,
+		function(result){
+			var value = localStorage.getItem("element-"+id);
+			var timestamp = localStorage.getItem("timestamp-element-"+id);
+			localStorage.setItem("element-"+result.data.id, value);
+			localStorage.setItem("timestamp-element-"+result.data.id, timestamp);
+			localStorage.removeItem("element-"+id);
+			localStorage.removeItem("timestamp-element-"+id);
+			// Change local ids in page
+			$('body *').each(function() {
+				$.each(this.attributes, function() {
+					if(this.specified) {
+						this.value = this.value.replace(new RegExp(id, "g"), result.data.id);
+					}
+				});
+			});
+		},
+		function(result){}
+	);
+}
+
+/*************************/
+/* Vault: update element */
+/*************************/
+
+function vaultUpdateElement(id) {
+	let data = {
+		id: id,
+		value: localStorage.getItem("element-"+id),
+		updatedAt: localStorage.getItem("timestamp-element-"+id)
+	};
+	callApi("vault/one", "PUT", data, true,
+		function(result){},
+		function(result){}
+	);
 }
 
 /************************/
 /* Devices: create list */
 /************************/
 
-function loadDevices() {
-	return '[{"id":1,"useragent":"Windows 11 - Chrome 116","type":"extension"}, {"id":2,"useragent":"iPhone X - Safari Web Browser","type":"browser"}, {"id":3,"useragent":"Pixel 5 - Android App","type":"mobile"}]';
-}
+$(document).ready(function() {
+	$("#showDevicesModal, #showDevicesModalMobile").click(function(){
+		loadDevices();
+	});
+});
 
-function initDevices() {
-	const devicesTableBody = $("#devicesTableBody");
-	const devices = JSON.parse(loadDevices());
-	for(var i=0; i<devices.length; i++) {
-		devicesTableBody.append(createDevice(devices[i].id, devices[i].useragent, devices[i].type));
+function showDevicesLoader(show, empty = true) {
+	if(show) {
+		$("#devicesTable").addClass("d-none");
+		$("#devicesTableEmpty").addClass("d-none");
+		$("#devicesTableLoading").removeClass("d-none");
+	}
+	else {
+		$("#devicesTableLoading").addClass("d-none");
+		if(!empty) {
+			$("#devicesTable").removeClass("d-none");
+			$("#devicesTableEmpty").addClass("d-none");
+		}
+		else {
+			$("#devicesTable").addClass("d-none");
+			$("#devicesTableEmpty").removeClass("d-none");
+		}
 	}
 }
 
-function createDevice(id, userAgent, type) {
+function loadDevices() {
+	showDevicesLoader(true);
+	callApi("sessions", "GET", "", true,
+		function(result){
+			$("#devicesTableLoading").addClass("d-none");
+			var devices = [];
+			for(var i=0; i<result.data.sessions.length; i++) {
+				const device = new Object();
+				device.id = result.data.sessions[i].id;
+				device.useragent = result.data.sessions[i].userAgent.device + " - " + result.data.sessions[i].userAgent.client;
+				device.type = result.data.sessions[i].userAgent.type;
+				device.country = result.data.sessions[i].location;
+				device.current = false;
+				if(result.data.sessions[i].id == result.data.current) {
+					device.current = true;
+				}
+				devices.push(device);
+			}
+			initDevices(devices);
+		},
+		function(result) {
+			showDevicesLoader(false, true);
+		}
+	);
+}
+
+function initDevices(devices) {
+	const devicesTableBody = $("#devicesTableBody");
+	devicesTableBody.empty();
+	if(devices.length > 0) {
+		showDevicesLoader(false, false);
+	}
+	else {
+		showDevicesLoader(false, true);
+	}
+	for(var i=0; i<devices.length; i++) {
+		devicesTableBody.append(createDevice(devices[i].id, devices[i].useragent, devices[i].type, devices[i].country, devices[i].current));
+	}
+	setDeleteDeviceButtons();
+}
+
+function createDevice(id, userAgent, type, country, isCurrent) {
 	var tagColor = "btn-outline-primary";
-	var tagIcon = "globe-americas";
-	var tagTranslation = "vault-device-type-web-browser";
-	if(type == "extension") {
+	var tagIcon = "question-circle";
+	var tagTranslation = "vault-device-type-unknown";
+	var currentDeviceClass = "";
+	var currentDeviceCode = "";
+	if(type == "web") {
+		tagColor = "btn-outline-primary";
+		tagIcon = "globe-americas";
+		tagTranslation = "vault-device-type-web-browser";
+	}	
+	if(type == "browserExtension") {
 		tagColor = "btn-outline-primary";
 		tagIcon = "code-square";
 		tagTranslation = "vault-device-type-browser-extension";
@@ -1011,10 +1277,26 @@ function createDevice(id, userAgent, type) {
 		tagIcon = "phone";
 		tagTranslation = "vault-device-type-mobile-app";
 	}
+	if(isCurrent) {
+		currentDeviceClass = "current-device";
+		currentDeviceCode = "<tr><td></td><td class='align-middle'><span class='small text-theme' data-translate-key='vault-devices-current'>"+translateString("vault-devices-current")+"</span></td></tr>";
+	}
 	var tagDescription = translateString(tagTranslation);
 	const row = `
-		<tr id="device-${id}">
-			<td class="align-middle text-theme">${userAgent}</td>
+		<tr id="device-${id}" class="${currentDeviceClass}">
+			<td class="align-middle">
+				<table>
+					<tr>
+						<td>
+							<div class="align-middle d-flex">
+								<img draggable="false" class="me-3" src="./img/flags/${country}.svg" width="20" />
+							</div>
+						</td>
+						<td class="align-middle">${userAgent}</td>
+					</tr>
+					${currentDeviceCode}
+				</table>
+			</td>
 			<td class="align-middle"><span class="btn ${tagColor} btn-sm mx-2 pe-none"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#${tagIcon}"/></svg><span class="d-none d-md-inline ms-2" data-translate-key="${tagTranslation}">${tagDescription}</span></td>
 			<td class="align-middle"><span class="btn btn-danger deleteDeviceButton" role="button" data-bs-toggle="modal" data-bs-target="#deleteDeviceModal" wiz-id="${id}"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#trash3" /></svg></span></td>
 		</tr>`
@@ -1025,21 +1307,45 @@ function createDevice(id, userAgent, type) {
 /* Devices: delete */
 /*******************/
 
-$(document).ready(function() {
+function setDeleteDeviceButtons() {
 	$(".deleteDeviceButton").click(function(){
 		var wizId = $(this).attr("wiz-id");
 		$("#deleteDeviceId").val(wizId);
+		if($("#device-"+wizId).hasClass("current-device")) {
+			$("#currentDeviceWarning").removeClass("d-none");
+		}
+		else {
+			$("#currentDeviceWarning").addClass("d-none");
+		}
 	});
+}
+
+$(document).ready(function() {
+	setDeleteDeviceButtons();
 	$("#deleteDevice").click(function(){
-		const id = $("#deleteDeviceId").val();
-		$('#device-'+id).remove();
-		deleteDevice(id);
+		deleteDevice($("#deleteDeviceId").val());
 	});
 });
 
 function deleteDevice(id) {
-	/* TODO */
-	// Chiamata AJAX al Server
+	showDevicesLoader(true);
+	let data = {
+		id: id
+	};
+	callApi("sessions/one", "DELETE", data, true,
+		function(result){
+			if($("#device-"+id).hasClass("current-device")) {
+				$("#devicesModal").modal("hide");
+				signout();
+			}
+			$("#device-"+id).remove();
+			showDevicesLoader(false, false);
+		},
+		function(result) {
+			showBackendError(result);
+			showDevicesLoader(false, false);
+		}
+	);
 }
 
 /***************/
@@ -1058,6 +1364,36 @@ $(document).ready(function() {
 /* Edit profile */
 /****************/
 
+function showProfileLoader(show = true) {
+	if(show) {
+		$("#profileContent").addClass("d-none");
+		$("#profileLoading").removeClass("d-none");
+	}
+	else {
+		$("#profileLoading").addClass("d-none");
+		$("#profileContent").removeClass("d-none");
+	}
+}
+
+$("#showProfileModal").on( "click", function() {
+	showProfileLoader(true);
+	callApi("user/profile", "GET", "", true,
+		function(result){
+			localStorage.setItem("firstName", result.data.name.firstName);
+			localStorage.setItem("lastName", result.data.name.lastName);
+			localStorage.setItem("email", result.data.email);
+			$("#profileFirstName").val(result.data.name.firstName);
+			$("#profileLastName").val(result.data.name.lastName);
+			$("#profileEmail").val(result.data.email);
+			showProfileLoader(false);
+		},
+		function(result) {
+			$("#profileModal").modal("hide");
+			showFeedback(translateString("feedback-title-error"), translateString("vault-user-edit-connection-error"));
+		}
+	);
+});
+
 $("#editProfileButton").click(function(){
 	var firstName = $("#profileFirstName");
 	var lastName = $("#profileLastName");
@@ -1073,42 +1409,51 @@ $("#editProfileButton").click(function(){
 		lastName.focus();
 		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-last-name-error"));
 	}
-	else if(!email.val().match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
-		email.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-email-error"));
-	}
-	else if(!oldPassword.val().trim().length) {
-		oldPassword.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("vault-feedback-current-password-error"));
-	}
-	else if(!password.val().trim().length) {
-		password.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-error"));
-	}
-	else if(!password.val().match(/^(?=.*\d)(?=.*[!@#$%^&*;])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)) {
-		password.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-complexity-error"));
-	}
-	else if(!passwordConfirm.val().trim().length) {
-		passwordConfirm.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-confirm-error"));
-	}
-	else if(password.val() != passwordConfirm.val()) {
-		passwordConfirm.val("");
-		passwordConfirm.focus();
-		showFeedback(translateString("feedback-title-error"), translateString("signin-feedback-password-match-error"));
-	}
 	else {
+		editProfile(firstName.val().trim(), lastName.val().trim(), email.val().trim(), oldPassword.val());
 		$("#profileModal").modal("hide");
-		//showLoader(true);
 	}
 });
 
-function editProfile(firstName, lastName, email, oldMasterPasswordHash, masterPasswordHash, magicPassword) {
-	/* TODO */
-	// Chiamata AJAX al Server
-	showLoader(false);
-	showFeedbackModal("Registrazione completata", "Benvenuto a bordo! Controlla il tuo indirizzo email, ti abbiamo inviato le istruzioni per attivare il tuo account.");
+function editProfile(firstName, lastName, email, password) {
+	if(password.length > 0) {
+		showLoader(true);
+		startCryptoWorker("generateMasterPasswordHash", [password, email], "changePasswordRequest", []);
+	}
+	else {
+		let data = {
+			name: {
+				firstName: firstName,
+				lastName: lastName
+			}
+		};
+		callApi("user/profile", "PUT", data, true,
+			function(result){
+				$("#profileNameNavbar").text(firstName);
+				localStorage.setItem("firstName", firstName);
+				localStorage.setItem("lastName", lastName);
+				showFeedback(translateString("feedback-title-success"), translateString("vault-user-edit-success"));
+			},
+			function(result) {
+				showBackendError(result);
+			}
+		);
+	}
+}
+
+function changePasswordRequest(masterPasswordHash) {
+	let data = {
+		password: masterPasswordHash
+	};
+	callApi("user/password/reset", "POST", data, true,
+		function(result){
+			signout("password");
+		},
+		function(result) {
+			showLoader(false);
+			showBackendError(result);
+		}
+	);
 }
 
 /******************/
@@ -1118,9 +1463,15 @@ function editProfile(firstName, lastName, email, oldMasterPasswordHash, masterPa
 $("#deleteProfileButton").click(function(){
 	$("#deleteProfileModal").modal("hide");
 	showLoader(true);
-	/* TODO */
-	// Chiamata AJAX al Server
-	$("#logoutButton").click();
+	callApi("user/delete", "POST", "", true,
+		function(result){
+			signout("delete");
+		},
+		function(result) {
+			showLoader(false);
+			showBackendError(result);
+		}
+	);
 });
 
 /*********************/
@@ -1165,10 +1516,12 @@ $(document).ready(function() {
 	$("#profileOldPasswordEye").click(function(){
 		clickEye("#profileOldPassword", "#eyeProfileOldPassword", false);
 	});
-	$("#profilePasswordEye").click(function(){
-		clickEye("#profilePassword", "#eyeProfilePassword", false);
-	});
-	$("#profilePasswordConfirmEye").click(function(){
-		clickEye("#profilePasswordConfirm", "#eyeProfilePasswordConfirm", false);
-	});
+});
+
+/****************/
+/* Force resync */
+/****************/
+
+$("#forceResync").click(function(){
+	location.reload();
 });
