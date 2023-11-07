@@ -1,0 +1,87 @@
+db.createCollection("wizards", {
+    validator: {
+  $jsonSchema: {
+    bsonType: "object",
+    required: ["user", "magicKey", "sessions", "vault"],
+    properties: {
+      user: {
+        bsonType: "object",
+        required: ["name", "email", "masterPassword", "isActive", "validationToken", "isEnabled", "creationTimestamp"],
+
+        properties: {
+          name: {
+            bsonType: "object",
+            required: ["firstName", "lastName"],
+            properties: {
+              firstName: {bsonType: "string"},
+              lastName: {bsonType: "string"}
+            }
+          },
+          email: {bsonType: "string"},
+          masterPassword: {
+            bsonType: "object",
+            required: ["value", "salt"],
+            properties: {
+              value: {bsonType: "string"},
+              salt: {bsonType: "string"}
+            }
+          },
+          isActive: {bsonType: "bool"},
+          validationToken: {bsonType: "string"},
+          isEnabled: {bsonType: "bool"},
+          creationTimestamp: {bsonType: "date"}
+        }
+      },
+      magicKey: {bsonType: "string"},
+      sessions: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "location", "userAgent", "refreshToken"],
+          properties: {
+            id: {bsonType: "objectId"},
+            location: {
+                bsonType: "string",
+                minLength: 2,
+                maxLength: 2
+            },
+            userAgent: {
+                bsonType: "object",
+                required: ["device", "client", "type"],
+                properties: {
+                    device: {bsonType: "string"},
+                    client: {bsonType: "string"},
+                    type: {
+                   enum: ['web','mobile', 'unknown'],
+                    }
+                }
+            },
+            refreshToken: {
+           bsonType: "object",
+                required: ["value", "expiration"],
+                properties: {
+                    value: {bsonType: "string"},
+                    expiration: {bsonType: "date"}
+                }
+            },
+          }
+        }
+      },
+      vault: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "value", "updatedAt"],
+          properties: {
+            id: {bsonType: "objectId"},
+            value: {bsonType: "string"},
+            updatedAt: {bsonType: "string"}
+          }
+          }
+          }
+          }
+       }
+     }
+   }
+ );
+db.wizards.createIndex( { "user.email": 1 }, { unique: true } );
