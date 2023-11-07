@@ -1,0 +1,154 @@
+[
+  {
+    "code": 99,
+    "httpCode": 414,
+    "message": {
+      "en": "I'm batman",
+      "it": "Sono batman"
+    }
+  },
+  {
+    "code": 100,
+    "httpCode": 500,
+    "message": {
+      "en": "It is occurred an unknown error",
+      "it": "Si è verificato un errore sconosciuto"
+    }
+  },
+  {
+    "code": 101,
+    "httpCode": 500,
+    "message": {
+      "en": "Unable to communicate with databases",
+      "it": "Impossibile comunicare con il database"
+    }
+  },
+  {
+    "code": 102,
+    "httpCode": 409,
+    "message": {
+      "en": "It is occurred an error during user creation",
+      "it": "Si è verificato un errore nella creazione dell'utente"
+    }
+  },
+  {
+    "code": 103,
+    "httpCode": 503,
+    "message": {
+      "en": "Service Unavailable",
+      "it": "Servizio non disponibile"
+    }
+  },
+  {
+    "code": 104,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error in user verification",
+      "it": "Si è verificato un errore nella verifica dell'utente"
+    }
+  },
+  {
+    "code": 105,
+    "httpCode": 400,
+    "message": {
+      "en": "Bad formatted request",
+      "it": "Richiesta mal formattata"
+    }
+  },
+  {
+    "code": 106,
+    "httpCode": 401,
+    "message": {
+      "en": "unauthorized",
+      "it": "unauthorized"
+    }
+  },
+  {
+    "code": 107,
+    "httpCode": 401,
+    "message": {
+      "en": "Signup credentials not valid",
+      "it": "Credenziali di accesso non valide"
+    }
+  },
+  {
+    "code": 108,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error getting user profile",
+      "it": "Si è verificato un errore nel caricamento del profilo"
+    }
+  },
+  {
+    "code": 109,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error edited user profile",
+      "it": "Si è verificato un errore nella modifica del profilo"
+    }
+  },
+  {
+    "code": 110,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error getting all sessions",
+      "it": "Si è verificato un errore nel caricamento delle sessioni"
+    }
+  },
+  {
+    "code": 111,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error deleting session",
+      "it": "Si è verificato un errore nell'eliminazione della sessione"
+    }
+  },
+  {
+    "code": 112,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error getting vault",
+      "it": "Si è verificato un errore nel caricamento della cassaforte"
+    }
+  },
+  {
+    "code": 113,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error during pushing vault items",
+      "it": "Si è verificato un errore durante il caricamento di uno o più elementi della cassaforte"
+    }
+  },
+  {
+    "code": 114,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error getting magic password",
+      "it": "Si è verificato un errore durante il caricamento della magic password"
+    }
+  },
+  {
+    "code": 115,
+    "httpCode": 403,
+    "message": {
+      "en": "Not verified user",
+      "it": "Utente non verificato"
+    }
+  },
+  {
+    "code": 116,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error deleting user",
+      "it": "Si è verificato un errore nell'eliminazione dell'utente"
+    }
+  },
+  {
+    "code": 117,
+    "httpCode": 400,
+    "message": {
+      "en": "It is occurred an error during deleting vault items",
+      "it": "Si è verificato un errore durante l'eliminazione di uno o più elementi della cassaforte"
+    }
+  }
+]
