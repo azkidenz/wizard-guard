@@ -234,3 +234,6 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 *.idea
+
+*.env
+.env
