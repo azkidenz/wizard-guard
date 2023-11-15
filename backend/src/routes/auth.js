@@ -6,11 +6,16 @@ const AuthController = require("../controllers/auth/auth");
 const ResponseController = require("../controllers/response");
 const {authRefreshTokenVerifyDataValidateChain} = require("../models/validator/auth");
 const TokenController = require("../controllers/auth/token");
+const {validationResult} = require("express-validator");
+const Fail = require("../controllers/fail");
 const router = express.Router();
 const response = new ResponseController();
 
 router.post('/refreshTokens', authRefreshTokenVerifyDataValidateChain, async (req, res, next) => {
     try {
+        let fail;
+        if (!(fail = validationResult(req)).isEmpty())
+            next(new Fail(fail.array()));
         const auth = TokenController.verifyRefreshToken(req.body.refreshToken);
         if(!auth)
             return next(new Exception(106));
