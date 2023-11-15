@@ -3,7 +3,7 @@
 </p>
 
 # WizardGuard
-WizardGuard is an end-to-end platform to manage password, credit card and secure notes. 
+WizardGuard is an end-to-end platform to manage passwords, credit cards and secure notes. 
 
 WizardGuard is available at [wizardguard.org](https://wizardguard.org).
 
