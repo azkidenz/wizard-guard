@@ -341,6 +341,7 @@ document.getElementById('copyPassword').addEventListener('click', function (even
 	secureLocalStorageSetItem("history-"+historyId, copyText.value);
 	var element = ["history-"+historyId, copyText.value];
 	$("#historyTableBody").prepend(createHistory(element));
+	$("#id-"+element[0]).text(element[1]);
 	addHistoryCopyListener();
 });
 
@@ -403,6 +404,7 @@ function initHistory() {
 	const passwordHistory = loadHistory();
 	for(var i=0; i<passwordHistory.length; i++) {
 		$("#historyTableBody").append(createHistory(passwordHistory[i]));
+		$("#id-"+passwordHistory[i][0]).text(passwordHistory[i][1]);
 	}
 	
 	addHistoryCopyListener();
@@ -413,10 +415,11 @@ function initHistory() {
 }
 
 function createHistory(passwordHistory) {
+	var wizId = passwordHistory[0].replace(/[^a-zA-Z0-9-]/g, '');
 	const row = `
 		<tr>
-			<td class="align-middle"><span role="button" class="btn btn-primary copyHistoryButton" wiz-id="${passwordHistory[0]}"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#clipboard"/></svg></span></td>
-			<td class="align-middle">${passwordHistory[1]}</td>
+			<td class="align-middle"><span role="button" class="btn btn-primary copyHistoryButton" wiz-id="${wizId}"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#clipboard"/></svg></span></td>
+			<td class="align-middle" id="id-${wizId}"></td>
 		</tr>`
 	return row;
 }
@@ -535,7 +538,9 @@ function setMainTable() {
 			if(description == "" || description == undefined) {
 				description = translateString("vault-generic-description");
 			}
-			credentialsTableBody.append(createRow(id, title, description, element.type));
+			credentialsTableBody.append(createRow(id, description, element.type));
+			$("#table-title-"+id).text(title);
+			$("#table-description-"+id).text(description);
 			new Promise(function() {
 				setFavicon(id);
 			}).then();
@@ -549,7 +554,8 @@ function setMainTable() {
 	initCheckboxes();
 }
 
-function createRow(id, title, description, type) {
+function createRow(id, description, type) {
+	id = id.replace(/[^a-zA-Z0-9-]/g, '');
 	const checkId = "check-"+id;
 	var tagColor = "btn-outline-primary";
 	var tagIcon = "key";
@@ -572,7 +578,7 @@ function createRow(id, title, description, type) {
 	const row = `
 		<tr class="align-middle ${type}" id="${id}">
 			<td><input class="form-check-input shadow-none mx-2" type="checkbox" value="${checkId}" id="${checkId}" name="${checkId}"></td>
-			<td onclick="showElement('${id}', true);" role="button"><span id="favicon-${id}"></span><span class="text-theme" id="table-title-${id}">${title}</span><br><span class="small" id="table-description-${id}" ${genericDescription}>${description}</span></td>
+			<td onclick="showElement('${id}', true);" role="button"><span id="favicon-${id}"></span><span class="text-theme" id="table-title-${id}"></span><br><span class="small" id="table-description-${id}" ${genericDescription}></span></td>
 			<td onclick="showElement('${id}', true);" role="button"><span class="btn ${tagColor} btn-sm mx-2 pe-none"><svg class="bi"><use xlink:href="./img/bootstrap-icons.svg#${tagIcon}"/></svg><span class="d-none d-md-inline ms-2" data-translate-key="${tagTranslation}">${tagDescription}</span></span></td>
 			<td>
 				<span class="dropdown">
@@ -756,6 +762,9 @@ function setFavicon(id) {
 		for(var c=0; c<element.websites.length; c++) {
 			try {
 				var url = element.websites[c];
+				if(!/^https?:\/\//i.test(url)) {
+					url = "https://" + url;
+				}
 				var parsedURL = new URL(url);
 				var hostname = parsedURL.hostname;
 				if(localStorage.getItem("loginType") == "local") {
@@ -1121,7 +1130,9 @@ function saveElement(id, modalId) {
 		description = translateString("vault-generic-description");
 	}
 	if(!elementFound) {
-		$("#mainTableBody").append(createRow(id, element.title, description, type));
+		$("#mainTableBody").append(createRow(id, description, type));
+		$("#table-title-"+id).text(element.title);
+		$("#table-description-"+id).text(description);
 		$("#noElements").addClass("d-none");
 	}
 	secureLocalStorageSetItem("element-"+id, JSON.stringify({...element}));
@@ -1251,12 +1262,15 @@ function initDevices(devices) {
 		showDevicesLoader(false, true);
 	}
 	for(var i=0; i<devices.length; i++) {
-		devicesTableBody.append(createDevice(devices[i].id, devices[i].useragent, devices[i].type, devices[i].country, devices[i].current));
+		devicesTableBody.append(createDevice(devices[i].id, devices[i].type, devices[i].country, devices[i].current));
+		$("#user-agent-"+devices[i].id).text(devices[i].useragent);
 	}
 	setDeleteDeviceButtons();
 }
 
-function createDevice(id, userAgent, type, country, isCurrent) {
+function createDevice(id, type, country, isCurrent) {
+	id = id.replace(/[^a-zA-Z0-9-]/g, '');
+	country = country.slice(0, 2);
 	var tagColor = "btn-outline-primary";
 	var tagIcon = "question-circle";
 	var tagTranslation = "vault-device-type-unknown";
@@ -1292,7 +1306,7 @@ function createDevice(id, userAgent, type, country, isCurrent) {
 								<img draggable="false" class="me-3" src="./img/flags/${country}.svg" width="20" />
 							</div>
 						</td>
-						<td class="align-middle">${userAgent}</td>
+						<td class="align-middle" id="user-agent-${id}"></td>
 					</tr>
 					${currentDeviceCode}
 				</table>
